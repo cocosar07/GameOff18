@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxState;
+import flixel.FlxG;
 
 class PlayState extends FlxState
 {
@@ -10,6 +11,9 @@ class PlayState extends FlxState
 
 		var player:Player = new Player(50, 50);
 		add(player);
+
+		FlxG.camera.follow(player, TOPDOWN, 1);
+		FlxG.camera.setScale(2, 2);
 	}
 
 	override public function update(elapsed:Float):Void
