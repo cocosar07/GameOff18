@@ -14,6 +14,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
+		FlxG.camera.bgColor.setRGBFloat(108.9/255, 194.0/255, 202.0/255);
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
 		add(map.backgroundLayer);
