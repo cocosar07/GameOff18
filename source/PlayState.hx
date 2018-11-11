@@ -16,7 +16,8 @@ class PlayState extends FlxState
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
 		add(map.backgroundLayer);
-		add(map.environmentLayer);
+		add(map.waterLayer);
+		add(map.rocksLayer);
 
 		player = new Player(50, 50);
 		add(player);
@@ -31,7 +32,15 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 
-		map.collideWithLevel(player);
+		map.collideWith(player, "water");
+		map.collideWith(player, "rocks");
+
+		if (map.collideWith(grappling, "rocks"))
+		{
+			remove(grappling);
+			grappling.kill();
+			grappling = null;
+		}
 	}
 
 	public function launchGrappling(direction:FlxPoint):Void
@@ -39,8 +48,16 @@ class PlayState extends FlxState
 		if (grappling != null)
 			return;
 
-		grappling = new Grappling(player.x + player.width/2, player.y + player.height/2);
+		grappling = new Grappling(player.x + player.width/2, player.y + player.height/2, player);
 		add(grappling);
 		grappling.setDirection(direction);
+		grappling.destroyGrappling.add(destroyGrappling);
+	}
+
+	public function destroyGrappling():Void
+	{
+		remove(grappling);
+		grappling.kill();
+		grappling = null;
 	}
 }

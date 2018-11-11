@@ -12,14 +12,16 @@ import flixel.tile.FlxTilemap;
 class TileMap extends TiledMap
 {
 	public var backgroundLayer:FlxGroup;
-	public var environmentLayer:FlxGroup;
+	public var waterLayer:FlxGroup;
+	public var rocksLayer:FlxGroup;
 
 	public function new(tiledLevel:FlxTiledMapAsset, state:PlayState)
 	{
 		super(tiledLevel);
 
 		backgroundLayer = new FlxGroup();
-		environmentLayer = new FlxGroup();
+		waterLayer = new FlxGroup();
+		rocksLayer = new FlxGroup();
 
 		FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
 
@@ -38,22 +40,29 @@ class TileMap extends TiledMap
 				
 			tilemap.loadMapFromArray(tileLayer.tileArray, width, height, tileSheetName, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
 
-			if (layer.name == "base")
+			if (layer.name == "background")
 				backgroundLayer.add(tilemap);
-			else if (layer.name == "env")
-				environmentLayer.add(tilemap);
+			else if (layer.name == "water")
+				waterLayer.add(tilemap);
+			else if (layer.name == "rocks")
+				rocksLayer.add(tilemap);
 		}
 	}
 	
-	public function collideWithLevel(obj:FlxObject, ?notifyCallback:FlxObject->FlxObject->Void, ?processCallback:FlxObject->FlxObject->Bool):Bool
+	public function collideWith(obj:FlxObject, layerName:String, ?notifyCallback:FlxObject->FlxObject->Void, ?processCallback:FlxObject->FlxObject->Bool):Bool
 	{
-		if (environmentLayer == null)
+		var layer:FlxGroup = null;
+
+		if (layerName == "water")
+			layer = waterLayer;
+		if (layerName == "rocks")
+			layer = rocksLayer;
+
+		if (layer == null)
 			return false;
 
-		for (map in environmentLayer)
+		for (map in layer)
 		{
-			// IMPORTANT: Always collide the map with objects, not the other way around.
-			//            This prevents odd collision errors (collision separation code off by 1 px).
 			if (FlxG.overlap(map, obj, notifyCallback, processCallback != null ? processCallback : FlxObject.separate))
 			{
 				return true;

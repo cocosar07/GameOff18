@@ -11,7 +11,7 @@ class Player extends FlxSprite
 {
 	public var launchGrapplingSignal:FlxTypedSignal<FlxPoint->Void>;
 
-	var speed:Float = 200;
+	var speed:Float = 100;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
