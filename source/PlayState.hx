@@ -2,11 +2,13 @@ package;
 
 import flixel.FlxState;
 import flixel.FlxG;
+import flixel.math.FlxPoint;
 
 class PlayState extends FlxState
 {
 	var map:TileMap;
 	var player:Player;
+	var grappling:Grappling;
 
 	override public function create():Void
 	{
@@ -18,9 +20,11 @@ class PlayState extends FlxState
 
 		player = new Player(50, 50);
 		add(player);
+		player.launchGrapplingSignal.add(launchGrappling);
+
+		grappling = null;
 
 		FlxG.camera.follow(player, TOPDOWN, 1);
-		//FlxG.camera.setScale(2, 2);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -28,5 +32,15 @@ class PlayState extends FlxState
 		super.update(elapsed);
 
 		map.collideWithLevel(player);
+	}
+
+	public function launchGrappling(direction:FlxPoint):Void
+	{
+		if (grappling != null)
+			return;
+
+		grappling = new Grappling(player.x + player.width/2, player.y + player.height/2);
+		add(grappling);
+		grappling.setDirection(direction);
 	}
 }

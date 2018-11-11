@@ -4,14 +4,19 @@ import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.math.FlxVector;
+import flixel.math.FlxPoint;
+import flixel.util.FlxSignal;
 
 class Player extends FlxSprite
 {
+	public var launchGrapplingSignal:FlxTypedSignal<FlxPoint->Void>;
+
 	var speed:Float = 200;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
+		launchGrapplingSignal = new FlxTypedSignal<FlxPoint->Void>();
 
 		makeGraphic(8, 8, FlxColor.BLUE);
 
@@ -21,6 +26,19 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float):Void
 	{
 		move();
+
+		if (FlxG.mouse.justPressed)
+		{
+			trace("Attack");
+		}
+		if (FlxG.mouse.justPressedRight)
+		{
+			var diff:FlxPoint = FlxG.mouse.getWorldPosition();
+			diff.subtractPoint(getPosition());
+
+			var direction:FlxVector = new FlxVector(diff.x, diff.y);
+			launchGrapplingSignal.dispatch(direction.normalize());
+		}
 
 		super.update(elapsed);
 	}
