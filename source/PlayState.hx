@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxState;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.math.FlxPoint;
 
 class PlayState extends FlxState
@@ -19,27 +20,31 @@ class PlayState extends FlxState
 		add(map.waterLayer);
 		add(map.rocksLayer);
 
-		player = new Player(50, 50);
+		player = new Player(125, 150);
 		add(player);
 		player.launchGrapplingSignal.add(launchGrappling);
 
 		grappling = null;
 
-		FlxG.camera.follow(player, TOPDOWN, 1);
+		FlxG.camera.follow(player, LOCKON, 0.3);
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 
-		map.collideWith(player, "water");
-		map.collideWith(player, "rocks");
-
-		if (map.collideWith(grappling, "rocks"))
+		if (!player.pulled)
 		{
-			remove(grappling);
-			grappling.kill();
-			grappling = null;
+			map.collideWith(player, "water");
+			map.collideWith(player, "rocks");
+		}
+
+		if (grappling != null && grappling.launched)
+		{
+			if (map.collideWith(grappling, "rocks"))
+			{
+				grappling.startPullingPlayer();
+			}
 		}
 	}
 
@@ -48,10 +53,10 @@ class PlayState extends FlxState
 		if (grappling != null)
 			return;
 
-		grappling = new Grappling(player.x + player.width/2, player.y + player.height/2, player);
-		add(grappling);
+		grappling = new Grappling(player.getMidpoint().x, player.getMidpoint().y, player);
 		grappling.setDirection(direction);
 		grappling.destroyGrappling.add(destroyGrappling);
+		add(grappling);
 	}
 
 	public function destroyGrappling():Void

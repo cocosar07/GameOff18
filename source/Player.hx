@@ -10,6 +10,7 @@ import flixel.util.FlxSignal;
 class Player extends FlxSprite
 {
 	public var launchGrapplingSignal:FlxTypedSignal<FlxPoint->Void>;
+	public var pulled:Bool = false;
 
 	var speed:Float = 100;
 
@@ -20,24 +21,32 @@ class Player extends FlxSprite
 
 		makeGraphic(8, 8, FlxColor.BLUE);
 
+		setup();
+	}
+
+	public function setup():Void
+	{
 		drag.x = drag.y = 1600;
 	}
 
 	override public function update(elapsed:Float):Void
 	{
-		move();
-
-		if (FlxG.mouse.justPressed)
+		if (!pulled)
 		{
-			trace("Attack");
-		}
-		if (FlxG.mouse.justPressedRight)
-		{
-			var diff:FlxPoint = FlxG.mouse.getWorldPosition();
-			diff.subtractPoint(getPosition());
+			move();
 
-			var direction:FlxVector = new FlxVector(diff.x, diff.y);
-			launchGrapplingSignal.dispatch(direction.normalize());
+			if (FlxG.mouse.justPressed)
+			{
+				trace("Attack");
+			}
+			if (FlxG.mouse.justPressedRight)
+			{
+				var diff:FlxPoint = FlxG.mouse.getWorldPosition();
+				diff.subtractPoint(getMidpoint());
+
+				var direction:FlxVector = new FlxVector(diff.x, diff.y);
+				launchGrapplingSignal.dispatch(direction.normalize());
+			}
 		}
 
 		super.update(elapsed);
