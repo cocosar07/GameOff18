@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import entities.Entity;
+import entities.Enemy;
 
 class PlayState extends FlxState
 {
@@ -13,6 +14,7 @@ class PlayState extends FlxState
 	public var grappling:Grappling;
 
 	public var rocks:FlxGroup;
+	public var enemies:FlxGroup;
 
 	override public function create():Void
 	{
@@ -20,6 +22,7 @@ class PlayState extends FlxState
 		FlxG.camera.bgColor.setRGBFloat(108.9/255, 194.0/255, 202.0/255);
 
 		rocks = new FlxGroup();
+		enemies = new FlxGroup();
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
 		add(map.backgroundLayer);
@@ -32,6 +35,11 @@ class PlayState extends FlxState
 		grappling = null;
 
 		add(rocks);
+		add(enemies);
+
+		var e:Enemy = cast enemies.recycle(Enemy);
+		e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
+		e.player = player;
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 	}
@@ -44,11 +52,23 @@ class PlayState extends FlxState
 		{
 			map.collideWithLevel(player);
 			FlxG.overlap(rocks, player, null, FlxObject.separate);
+			FlxG.overlap(enemies, player, null, FlxObject.separate);
+		}
+
+		for (e in enemies)
+		{
+			var enemy:Entity = cast e;
+			if (!enemy.pulled)
+			{
+				map.collideWithLevel(enemy);
+				FlxG.overlap(rocks, enemy, null, FlxObject.separate);
+			}
 		}
 
 		if (grappling != null && grappling.launched)
 		{
 			FlxG.overlap(rocks, grappling, grapplingCollision);
+			FlxG.overlap(enemies, grappling, grapplingCollision);
 		}
 	}
 
@@ -74,11 +94,16 @@ class PlayState extends FlxState
 
 	public function grapplingCollision(other:FlxObject, _:FlxObject):Void
 	{
-		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);
 		var entity:Entity = cast other;
 
 		if (entity == null)
 			return;
+	
+		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);	
+		grappling.grabbedItem = entity;
+
+		grappling.launched = false;
+		grappling.velocity.set(0, 0);
 		
 		if (!entity.pullable)
 		{
@@ -87,7 +112,7 @@ class PlayState extends FlxState
 		else
 		{
 			// Pull object
-			destroyGrappling();
+			entity.pulled = true;
 		}
 	}
 }
