@@ -9,7 +9,7 @@ import flixel.util.FlxSignal;
 
 class Player extends FlxSprite
 {
-	public var launchGrapplingSignal:FlxTypedSignal<FlxPoint->Void>;
+	public var launchGrapplingSignal:FlxSignal;
 	public var pulled:Bool = false;
 
 	var speed:Float = 100;
@@ -17,7 +17,7 @@ class Player extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
-		launchGrapplingSignal = new FlxTypedSignal<FlxPoint->Void>();
+		launchGrapplingSignal = new FlxSignal();
 
 		makeGraphic(8, 8, FlxColor.BLUE);
 
@@ -41,11 +41,7 @@ class Player extends FlxSprite
 			}
 			if (FlxG.mouse.justPressedRight)
 			{
-				var diff:FlxPoint = FlxG.mouse.getWorldPosition();
-				diff.subtractPoint(getMidpoint());
-
-				var direction:FlxVector = new FlxVector(diff.x, diff.y);
-				launchGrapplingSignal.dispatch(direction.normalize());
+				launchGrapplingSignal.dispatch();
 			}
 		}
 

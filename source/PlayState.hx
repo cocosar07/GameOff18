@@ -4,7 +4,6 @@ import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
-import flixel.math.FlxPoint;
 import entities.Entity;
 
 class PlayState extends FlxState
@@ -53,13 +52,15 @@ class PlayState extends FlxState
 		}
 	}
 
-	public function launchGrappling(direction:FlxPoint):Void
+	public function launchGrappling():Void
 	{
 		if (grappling != null)
 			return;
 
-		grappling = new Grappling(player.getMidpoint().x, player.getMidpoint().y, player);
-		grappling.setDirection(direction);
+		grappling = new Grappling(0, 0, player);
+		grappling.setPosition(player.getMidpoint().x, player.getMidpoint().y);
+		flixel.math.FlxVelocity.moveTowardsMouse(grappling, grappling.speed);
+
 		grappling.destroyGrappling.add(destroyGrappling);
 		add(grappling);
 	}

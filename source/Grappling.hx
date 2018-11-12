@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
-import flixel.math.FlxVector;
 import flixel.util.FlxSignal;
 
 class Grappling extends FlxSprite
@@ -26,8 +25,6 @@ class Grappling extends FlxSprite
 		destroyGrappling = new FlxSignal();
 
 		makeGraphic(4, 4, FlxColor.WHITE);
-
-		setPosition(X, Y);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -65,12 +62,7 @@ class Grappling extends FlxSprite
 		player.pulled = true;
 		player.drag.x = player.drag.y = 0;
 
-		var diff:FlxPoint = getMidpoint();
-		diff.subtractPoint(player.getMidpoint());
-
-		var dir:FlxVector = new FlxVector(diff.x, diff.y).normalize();
-
-		player.velocity.set(dir.x * pullForce, dir.y * pullForce);
+		flixel.math.FlxVelocity.moveTowardsPoint(player, getMidpoint(), pullForce);
 
 		FlxG.camera.followLead.set(6, 0);
 	}
