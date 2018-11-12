@@ -6,57 +6,60 @@ import flixel.group.FlxGroup;
 import flixel.addons.editors.tiled.TiledMap;
 import flixel.addons.editors.tiled.TiledLayer;
 import flixel.addons.editors.tiled.TiledTileLayer;
+import flixel.addons.editors.tiled.TiledObjectLayer;
 import flixel.addons.editors.tiled.TiledTileSet;
 import flixel.tile.FlxTilemap;
+
+import entities.Rock;
 
 class TileMap extends TiledMap
 {
 	public var backgroundLayer:FlxGroup;
-	public var waterLayer:FlxGroup;
-	public var rocksLayer:FlxGroup;
+	public var collisionLayer:FlxGroup;
 
 	public function new(tiledLevel:FlxTiledMapAsset, state:PlayState)
 	{
 		super(tiledLevel);
 
 		backgroundLayer = new FlxGroup();
-		waterLayer = new FlxGroup();
-		rocksLayer = new FlxGroup();
+		collisionLayer = new FlxGroup();
 
 		FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
 
 		for (layer in layers)
 		{
-			if (layer.type != TiledLayerType.TILE)
-				continue;
+			if (layer.type == TiledLayerType.TILE)
+			{
+				var tileLayer:TiledTileLayer = cast layer;
 
-			var tileLayer:TiledTileLayer = cast layer;
+				var tileSheetName:String = new String("assets/images/tileset.png");
+				var tileset:TiledTileSet = null;
+				tileset = tilesets.get("tileset");
 
-			var tileSheetName:String = new String("assets/images/tileset.png");
-			var tileset:TiledTileSet = null;
-			tileset = tilesets.get("tileset");
+				var tilemap:FlxTilemap = new FlxTilemap();
+					
+				tilemap.loadMapFromArray(tileLayer.tileArray, width, height, tileSheetName, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
 
-			var tilemap:FlxTilemap = new FlxTilemap();
-				
-			tilemap.loadMapFromArray(tileLayer.tileArray, width, height, tileSheetName, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
-
-			if (layer.name == "background")
-				backgroundLayer.add(tilemap);
-			else if (layer.name == "water")
-				waterLayer.add(tilemap);
-			else if (layer.name == "rocks")
-				rocksLayer.add(tilemap);
+				if (layer.name == "background")
+					backgroundLayer.add(tilemap);
+				else if (layer.name == "collision")
+					collisionLayer.add(tilemap);
+			}
+			else if (layer.type == TiledLayerType.OBJECT)
+			{
+				var objectLayer:TiledObjectLayer = cast layer;
+				for (o in objectLayer.objects)
+				{
+					var r:Rock = cast state.rocks.recycle(Rock);
+					r.setPosition(o.x, o.y - r.height);
+				}
+			}
 		}
 	}
 	
-	public function collideWith(obj:FlxObject, layerName:String, ?notifyCallback:FlxObject->FlxObject->Void, ?processCallback:FlxObject->FlxObject->Bool):Bool
+	public function collideWithLevel(obj:FlxObject, ?notifyCallback:FlxObject->FlxObject->Void, ?processCallback:FlxObject->FlxObject->Bool):Bool
 	{
-		var layer:FlxGroup = null;
-
-		if (layerName == "water")
-			layer = waterLayer;
-		if (layerName == "rocks")
-			layer = rocksLayer;
+		var layer:FlxGroup = collisionLayer;
 
 		if (layer == null)
 			return false;

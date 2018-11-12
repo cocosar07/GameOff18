@@ -27,8 +27,7 @@ class Grappling extends FlxSprite
 
 		makeGraphic(4, 4, FlxColor.WHITE);
 
-		x -= width/2;
-		y -= height/2;
+		setPosition(X, Y);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -46,7 +45,6 @@ class Grappling extends FlxSprite
 		else if (player.pulled && flixel.math.FlxMath.distanceBetween(this, player) <= minRange)
 		{
 			// The grappling pulled the player close enough
-
 			destroyGrappling.dispatch();
 			player.setup();
 			player.pulled = false;
@@ -75,5 +73,13 @@ class Grappling extends FlxSprite
 		player.velocity.set(dir.x * pullForce, dir.y * pullForce);
 
 		FlxG.camera.followLead.set(6, 0);
+	}
+
+	override function setPosition(X:Float = 0, Y:Float = 0):Void
+	{
+		super.setPosition(X, Y);
+
+		x -= width/2;
+		y -= height/2;
 	}
 }
