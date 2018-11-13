@@ -51,7 +51,7 @@ class TileMap extends TiledMap
 				for (o in objectLayer.objects)
 				{
 					var r:Rock = cast state.rocks.recycle(Rock);
-					r.setPosition(o.x, o.y - r.height);
+					r.setPosition(o.x + r.width/2, o.y - r.height/2);
 				}
 			}
 		}
