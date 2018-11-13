@@ -5,12 +5,14 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
+import flixel.math.FlxVector;
 import flixel.util.FlxSignal;
 import entities.Entity;
 
 class Grappling extends FlxSprite
 {
 	public var destroyGrappling:FlxSignal;
+	public var endPullItem:FlxTypedSignal<Entity->Void>;
 	public var speed:Float = 200;
 	public var maxRange:Float = 60;
 	public var minRange:Float = 10;
@@ -26,6 +28,7 @@ class Grappling extends FlxSprite
 		super(X, Y);
 		player = p;
 		destroyGrappling = new FlxSignal();
+		endPullItem = new FlxTypedSignal<Entity->Void>();
 
 		makeGraphic(4, 4, FlxColor.WHITE);
 	}
@@ -44,21 +47,33 @@ class Grappling extends FlxSprite
 					destroyGrappling.dispatch();
 				}
 			}
-			else if (flixel.math.FlxMath.distanceBetween(this, player) <= minRange)
+			else
 			{
-				destroyGrappling.dispatch();
-				if (player.pulled)
+				if (!player.pulled)
 				{
-					// The grappling pulled the player close enough
-					player.setup();
-					player.pulled = false;
-					FlxG.camera.followLead.set(0, 0);
+					if (grabbedItem != null && flixel.math.FlxMath.distanceBetween(this, player) <= minRange)
+					{
+						grabbedItem.pulled = false;
+						endPullItem.dispatch(grabbedItem);
+						grabbedItem = null;
+
+						destroyGrappling.dispatch();
+					}
 				}
 				else
 				{
-					if (grabbedItem != null)
+					var dist1:Float = player.getMidpoint().distanceTo(getMidpoint());
+					var dist2:Float = player.getMidpoint().add(player.velocity.x * elapsed, player.velocity.y * elapsed).distanceTo(getMidpoint());
+
+					if (dist2 > dist1 && flixel.math.FlxMath.distanceBetween(this, player) >= minRange)
 					{
-						grabbedItem.pulled = false;
+						// The grappling pulled the player close enough
+						player.setup();
+						player.velocity.set(0, 0);
+						player.pulled = false;
+						FlxG.camera.followLead.set(0, 0);
+
+						destroyGrappling.dispatch();
 					}
 				}
 			}

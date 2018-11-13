@@ -82,6 +82,7 @@ class PlayState extends FlxState
 		flixel.math.FlxVelocity.moveTowardsMouse(grappling, grappling.speed);
 
 		grappling.destroyGrappling.add(destroyGrappling);
+		grappling.endPullItem.add(endPullItem);
 		add(grappling);
 	}
 
@@ -113,6 +114,19 @@ class PlayState extends FlxState
 		{
 			// Pull object
 			entity.pulled = true;
+		}
+	}
+
+	public function endPullItem(item:Entity):Void
+	{
+		if (map.collideWithLevel(item, null, FlxObject.updateTouchingFlags))
+		{
+			item.kill();
+
+			var e:Enemy = cast enemies.recycle(Enemy);
+			e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
+			e.player = player;
+
 		}
 	}
 }
