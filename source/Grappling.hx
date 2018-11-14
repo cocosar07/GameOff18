@@ -12,6 +12,7 @@ import entities.Entity;
 class Grappling extends FlxSprite
 {
 	public var destroyGrappling:FlxSignal;
+	public var createChain:FlxSignal;
 	public var endPullItem:FlxTypedSignal<Entity->Void>;
 	public var speed:Float = 200;
 	public var maxRange:Float = 60;
@@ -21,6 +22,9 @@ class Grappling extends FlxSprite
 	public var launched:Bool = true;
 	public var grabbedItem:Entity;
 
+	public var chainSpace:Float = 8;
+	public var lastChainDistance:Float = 0;
+
 	var player:Player;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?p:Player=null)
@@ -28,6 +32,7 @@ class Grappling extends FlxSprite
 		super(X, Y);
 		player = p;
 		destroyGrappling = new FlxSignal();
+		createChain = new FlxSignal();
 		endPullItem = new FlxTypedSignal<Entity->Void>();
 
 		loadGraphic(AssetPaths.grappling_head__png);
@@ -44,6 +49,14 @@ class Grappling extends FlxSprite
 		{
 			if (launched)
 			{
+				var v:FlxVector = new FlxVector(velocity.x, velocity.y);
+				lastChainDistance += v.length * elapsed;
+				if (lastChainDistance >= chainSpace)
+				{
+					lastChainDistance = 0;
+					createChain.dispatch();
+				}
+
 				if (flixel.math.FlxMath.distanceBetween(this, player) >= maxRange)
 				{
 					// The grappling touched nothing and is far from the player, remove it

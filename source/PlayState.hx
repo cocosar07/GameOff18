@@ -15,6 +15,7 @@ class PlayState extends FlxState
 
 	public var rocks:FlxGroup;
 	public var enemies:FlxGroup;
+	public var chains:FlxGroup;
 
 	override public function create():Void
 	{
@@ -23,10 +24,13 @@ class PlayState extends FlxState
 
 		rocks = new FlxGroup();
 		enemies = new FlxGroup();
+		chains = new FlxGroup();
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
 		add(map.backgroundLayer);
 		add(map.collisionLayer);
+
+		add(chains);
 
 		player = new Player(125, 150);
 		add(player);
@@ -89,6 +93,7 @@ class PlayState extends FlxState
 			grappling.facing = FlxObject.RIGHT;
 
 		grappling.destroyGrappling.add(destroyGrappling);
+		grappling.createChain.add(createChain);
 		grappling.endPullItem.add(endPullItem);
 		add(grappling);
 	}
@@ -98,6 +103,21 @@ class PlayState extends FlxState
 		remove(grappling);
 		grappling.kill();
 		grappling = null;
+
+		for (c in chains)
+		{
+			c.kill();
+		}
+	}
+
+	public function createChain():Void
+	{
+		var c:GrapplingChain = cast chains.recycle(GrapplingChain);
+		c.setPosition(player.getMidpoint().x - c.width/2, player.getMidpoint().y - c.height/2);
+		c.distanceFromGrappling = grappling.getMidpoint().distanceTo(c.getMidpoint());
+		c.player = player;
+		c.grappling = grappling;
+		c.revive();
 	}
 
 	public function grapplingCollision(other:FlxObject, _:FlxObject):Void
