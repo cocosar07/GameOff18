@@ -96,6 +96,7 @@ class Grappling extends FlxSprite
 	{
 		player.pulled = true;
 		player.drag.x = player.drag.y = 0;
+		player.angle = flixel.math.FlxAngle.asDegrees(flixel.math.FlxAngle.angleBetweenPoint(player, getMidpoint())) + 90;
 
 		flixel.math.FlxVelocity.moveTowardsPoint(player, getMidpoint(), pullForce);
 
