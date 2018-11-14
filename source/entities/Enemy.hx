@@ -1,5 +1,7 @@
 package entities;
 
+import flixel.FlxObject;
+
 class Enemy extends Entity
 {
     public var player:Player = null;
@@ -10,7 +12,15 @@ class Enemy extends Entity
 		super(X, Y);
         
         player = p;
-        makeGraphic(8, 8, flixel.util.FlxColor.RED);
+        loadGraphic(AssetPaths.enemies__png, true, 8, 8);
+
+        setFacingFlip(FlxObject.RIGHT, false, false);
+        setFacingFlip(FlxObject.LEFT, true, false);
+
+        animation.add("run", [0, 1], 6, true);
+        animation.add("hit", [2], 3, false);
+
+        animation.play("run");
 
         pullable = true;
 	}
@@ -22,6 +32,11 @@ class Enemy extends Entity
         if (player != null && !pulled)
         {
             flixel.math.FlxVelocity.moveTowardsObject(this, player, speed);
+
+            if (velocity.x < 0)
+                facing = FlxObject.LEFT;
+            else
+                facing = FlxObject.RIGHT;
         }
 	}
 }

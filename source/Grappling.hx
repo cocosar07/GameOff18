@@ -70,6 +70,7 @@ class Grappling extends FlxSprite
 					if (grabbedItem != null && flixel.math.FlxMath.distanceBetween(this, player) <= minRange)
 					{
 						grabbedItem.pulled = false;
+						grabbedItem.animation.play("run");
 						endPullItem.dispatch(grabbedItem);
 						grabbedItem = null;
 

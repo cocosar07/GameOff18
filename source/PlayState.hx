@@ -141,6 +141,7 @@ class PlayState extends FlxState
 		{
 			// Pull object
 			entity.pulled = true;
+			entity.animation.play("hit");
 		}
 	}
 
