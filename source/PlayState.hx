@@ -81,6 +81,13 @@ class PlayState extends FlxState
 		grappling.setPosition(player.getMidpoint().x, player.getMidpoint().y);
 		flixel.math.FlxVelocity.moveTowardsMouse(grappling, grappling.speed);
 
+		grappling.angle = flixel.math.FlxAngle.angleBetweenMouse(grappling, true);
+
+		if (grappling.velocity.x < 0)
+			grappling.facing = FlxObject.LEFT;
+		else
+			grappling.facing = FlxObject.RIGHT;
+
 		grappling.destroyGrappling.add(destroyGrappling);
 		grappling.endPullItem.add(endPullItem);
 		add(grappling);
