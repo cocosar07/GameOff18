@@ -10,6 +10,7 @@ import flixel.util.FlxSignal;
 class Player extends FlxSprite
 {
 	public var launchGrapplingSignal:FlxSignal;
+	public var attackSignal:FlxSignal;
 	public var pulled:Bool = false;
 
 	var speed:Float = 100;
@@ -18,6 +19,7 @@ class Player extends FlxSprite
 	{
 		super(X, Y);
 		launchGrapplingSignal = new FlxSignal();
+		attackSignal = new FlxSignal();
 
 		loadGraphic(AssetPaths.player__png, true, 8, 8);
 
@@ -44,7 +46,7 @@ class Player extends FlxSprite
 
 			if (FlxG.mouse.justPressed)
 			{
-				trace("Attack");
+				attackSignal.dispatch();
 			}
 			if (FlxG.mouse.justPressedRight)
 			{

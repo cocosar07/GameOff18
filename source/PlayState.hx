@@ -3,6 +3,8 @@ package;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.math.FlxPoint;
+import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
 import entities.Entity;
 import entities.Enemy;
@@ -12,6 +14,7 @@ class PlayState extends FlxState
 	public var map:TileMap;
 	public var player:Player;
 	public var grappling:Grappling;
+	public var sword:Sword;
 
 	public var rocks:FlxGroup;
 	public var enemies:FlxGroup;
@@ -26,26 +29,29 @@ class PlayState extends FlxState
 		enemies = new FlxGroup();
 		chains = new FlxGroup();
 
-		map = new TileMap(AssetPaths.map1__tmx, this);
-		add(map.backgroundLayer);
-		add(map.collisionLayer);
+		sword = new Sword();
 
-		add(chains);
+		map = new TileMap(AssetPaths.map1__tmx, this);
 
 		player = new Player(125, 150);
-		add(player);
 		player.launchGrapplingSignal.add(launchGrappling);
+		player.attackSignal.add(attack);
 
 		grappling = null;
-
-		add(rocks);
-		add(enemies);
 
 		var e:Enemy = cast enemies.recycle(Enemy);
 		e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
 		e.player = player;
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
+
+		add(map.backgroundLayer);
+		add(map.collisionLayer);
+		add(chains);
+		add(player);
+		add(enemies);
+		add(rocks);
+		add(sword);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -156,5 +162,18 @@ class PlayState extends FlxState
 			e.player = player;
 
 		}
+	}
+
+	public function attack():Void
+	{
+		sword.revive();
+		sword.animation.play("attack");
+
+		var dir:FlxPoint = FlxG.mouse.getWorldPosition().subtractPoint(player.getMidpoint());
+		var v:FlxVector = new FlxVector(dir.x, dir.y).normalize();
+
+		sword.setPosition(player.getMidpoint().x + v.x * 6, player.getMidpoint().y + v.y * 6);
+
+		sword.angle = flixel.math.FlxAngle.angleBetweenPoint(player, FlxG.mouse.getWorldPosition(), true);
 	}
 }
