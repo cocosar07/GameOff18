@@ -1,11 +1,13 @@
 package entities;
 
 import flixel.FlxObject;
+import flixel.math.FlxVector;
 
 class Enemy extends Entity
 {
     public var player:Player = null;
     public var speed:Float = 30;
+    public var knocked:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?p:Player)
 	{
@@ -23,20 +25,35 @@ class Enemy extends Entity
         animation.play("run");
 
         pullable = true;
+
+        drag.x = drag.y = 400;
+        health = 3;
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 
-        if (player != null && !pulled)
+        if (!knocked)
         {
-            flixel.math.FlxVelocity.moveTowardsObject(this, player, speed);
+            if (player != null && !pulled)
+            {
+                flixel.math.FlxVelocity.moveTowardsObject(this, player, speed);
 
-            if (velocity.x < 0)
-                facing = FlxObject.LEFT;
-            else
-                facing = FlxObject.RIGHT;
+                if (velocity.x < 0)
+                    facing = FlxObject.LEFT;
+                else
+                    facing = FlxObject.RIGHT;
+            }
+        }
+        else
+        {
+            var v:FlxVector = new FlxVector(velocity.x, velocity.y);
+            if (v.length < 2)
+            {
+                knocked = false;
+                animation.play("run");
+            }
         }
 	}
 
@@ -46,6 +63,7 @@ class Enemy extends Entity
 
         velocity.set(0, 0);
         pulled = false;
+        health = 3;
 
         animation.play("run");
     }
