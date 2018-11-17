@@ -39,4 +39,14 @@ class Enemy extends Entity
                 facing = FlxObject.RIGHT;
         }
 	}
+
+    override public function revive():Void
+    {
+        super.revive();
+
+        velocity.set(0, 0);
+        pulled = false;
+
+        animation.play("run");
+    }
 }

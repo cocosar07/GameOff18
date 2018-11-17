@@ -186,7 +186,7 @@ class PlayState extends FlxState
 				trace("collision");
 				e.kill();
 				if (grappling != null && e == grappling.grabbedItem)
-					grappling.grabbedItem = null;
+					destroyGrappling();
 
 				var e:Enemy = cast enemies.recycle(Enemy);
 				e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);

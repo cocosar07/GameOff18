@@ -56,6 +56,7 @@ class Player extends FlxSprite
 					{
 						currentAttackTime = 0;
 						attacking = true;
+						velocity.set(0, 0);
 						attackSignal.dispatch();
 					}
 				}
