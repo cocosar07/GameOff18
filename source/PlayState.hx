@@ -3,6 +3,7 @@ package;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
@@ -175,5 +176,22 @@ class PlayState extends FlxState
 		sword.setPosition(player.getMidpoint().x + v.x * 6, player.getMidpoint().y + v.y * 6);
 
 		sword.angle = flixel.math.FlxAngle.angleBetweenPoint(player, FlxG.mouse.getWorldPosition(), true);
+
+		for (enemy in enemies)
+		{
+			var e:FlxSprite = cast enemy;
+
+			if (FlxG.pixelPerfectOverlap(sword, e))
+			{
+				trace("collision");
+				e.kill();
+				if (grappling != null && e == grappling.grabbedItem)
+					grappling.grabbedItem = null;
+
+				var e:Enemy = cast enemies.recycle(Enemy);
+				e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
+				e.player = player;
+			}
+		}
 	}
 }

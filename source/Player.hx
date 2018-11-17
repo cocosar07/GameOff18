@@ -12,8 +12,12 @@ class Player extends FlxSprite
 	public var launchGrapplingSignal:FlxSignal;
 	public var attackSignal:FlxSignal;
 	public var pulled:Bool = false;
+	public var attackTime:Float = 2/8;
 
 	var speed:Float = 100;
+
+	var attacking:Bool = false;
+	var currentAttackTime:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -42,15 +46,31 @@ class Player extends FlxSprite
 	{
 		if (!pulled)
 		{
-			move();
+			if (!attacking)
+			{
+				move();
 
-			if (FlxG.mouse.justPressed)
-			{
-				attackSignal.dispatch();
+				if (FlxG.mouse.justPressed)
+				{
+					if (!attacking)
+					{
+						currentAttackTime = 0;
+						attacking = true;
+						attackSignal.dispatch();
+					}
+				}
+				if (FlxG.mouse.justPressedRight)
+				{
+					launchGrapplingSignal.dispatch();
+				}
 			}
-			if (FlxG.mouse.justPressedRight)
+			else
 			{
-				launchGrapplingSignal.dispatch();
+				currentAttackTime += elapsed;
+				if (currentAttackTime >= attackTime)
+				{
+					attacking = false;
+				}
 			}
 		}
 
