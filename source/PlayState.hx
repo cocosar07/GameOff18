@@ -40,9 +40,7 @@ class PlayState extends FlxState
 
 		grappling = null;
 
-		var e:Enemy = cast enemies.recycle(Enemy);
-		e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
-		e.player = player;
+		createEnemy(150, 150);
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
@@ -73,6 +71,17 @@ class PlayState extends FlxState
 			{
 				map.collideWithLevel(enemy);
 				FlxG.overlap(rocks, enemy, null, FlxObject.separate);
+			}
+			if (sword.alive)
+			{
+				if (FlxG.pixelPerfectOverlap(sword, enemy))
+				{
+					e.kill();
+					if (grappling != null && e == grappling.grabbedItem)
+						destroyGrappling();
+
+					createEnemy(150, 150);
+				}
 			}
 		}
 
@@ -158,10 +167,7 @@ class PlayState extends FlxState
 		{
 			item.kill();
 
-			var e:Enemy = cast enemies.recycle(Enemy);
-			e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
-			e.player = player;
-
+			createEnemy(150, 150);
 		}
 	}
 
@@ -176,22 +182,12 @@ class PlayState extends FlxState
 		sword.setPosition(player.getMidpoint().x + v.x * 6, player.getMidpoint().y + v.y * 6);
 
 		sword.angle = flixel.math.FlxAngle.angleBetweenPoint(player, FlxG.mouse.getWorldPosition(), true);
+	}
 
-		for (enemy in enemies)
-		{
-			var e:FlxSprite = cast enemy;
-
-			if (FlxG.pixelPerfectOverlap(sword, e))
-			{
-				trace("collision");
-				e.kill();
-				if (grappling != null && e == grappling.grabbedItem)
-					destroyGrappling();
-
-				var e:Enemy = cast enemies.recycle(Enemy);
-				e.setPosition(Std.int(150/8)*8, Std.int(150/8)*8);
-				e.player = player;
-			}
-		}
+	function createEnemy(?X:Float, ?Y:Float):Void
+	{
+		var e:Enemy = cast enemies.recycle(Enemy);
+		e.setPosition(Std.int(X/8)*8, Std.int(Y/8)*8);
+		e.player = player;
 	}
 }
