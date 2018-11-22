@@ -34,6 +34,7 @@ class Player extends FlxSprite
 		setFacingFlip(FlxObject.LEFT, true, false);
 
 		animation.add("idle", [1], 3, false);
+		animation.add("hit", [2], 3, false);
 		animation.add("run", [0, 1], 6, true);
 
 		setup();
@@ -147,6 +148,7 @@ class Player extends FlxSprite
 	public function hit():Void
 	{
 		knocked = true;
+		animation.play("hit");
 	}
 
     override public function hurt(damages:Float):Void
