@@ -220,7 +220,11 @@ class PlayState extends FlxState
 			player.velocity.set(v.x, v.y);
 
 			player.hurt(1);
+
 			soundPlayerHit.play();
+			FlxG.camera.shake(0.03, 0.1);
+			if (player.health <= 0)
+				FlxG.camera.flash(flixel.util.FlxColor.RED, 0.2);
 		}
 
 		soundEnemyAttack.play();
