@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
+import flixel.system.FlxSound;
 import entities.Entity;
 import entities.Enemy;
 
@@ -21,6 +22,13 @@ class PlayState extends FlxState
 	public var enemies:FlxGroup;
 	public var chains:FlxGroup;
 	public var enemySwords:FlxGroup;
+
+	public var soundPlayerAttack:FlxSound;
+	public var soundEnemyAttack:FlxSound;
+	public var soundPlayerHit:FlxSound;
+	public var soundEnemyHit:FlxSound;
+	public var soundGrapplingHit:FlxSound;
+	public var soundEnemyDrown:FlxSound;
 
 	override public function create():Void
 	{
@@ -56,6 +64,13 @@ class PlayState extends FlxState
 		add(rocks);
 		add(enemySwords);
 		add(sword);
+
+		soundEnemyAttack = FlxG.sound.load(AssetPaths.attack__wav);
+		soundPlayerAttack = FlxG.sound.load(AssetPaths.attack1__wav);
+		soundEnemyHit = FlxG.sound.load(AssetPaths.enemy_hit__wav);
+		soundPlayerHit = FlxG.sound.load(AssetPaths.player_hit__wav);
+		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
+		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -153,6 +168,8 @@ class PlayState extends FlxState
 			entity.pulled = true;
 			entity.animation.play("hit");
 		}
+
+		soundGrapplingHit.play();
 	}
 
 	public function endPullItem(item:Entity):Void
@@ -160,6 +177,7 @@ class PlayState extends FlxState
 		if (map.collideWithLevel(item, null, FlxObject.updateTouchingFlags))
 		{
 			item.kill();
+			soundEnemyDrown.play();
 
 			createEnemy(150, 150);
 		}
@@ -182,8 +200,11 @@ class PlayState extends FlxState
 				enemy.velocity.set(v.x, v.y);
 
 				enemy.hurt(1);
+				soundEnemyHit.play();
 			}
 		}
+
+		soundPlayerAttack.play();
 	}
 
 	public function enemyAttack(e:Enemy):Void
@@ -199,7 +220,10 @@ class PlayState extends FlxState
 			player.velocity.set(v.x, v.y);
 
 			player.hurt(1);
+			soundPlayerHit.play();
 		}
+
+		soundEnemyAttack.play();
 	}
 
 	public function setupSword(s:Sword, origin:FlxSprite, target:FlxPoint):Void
