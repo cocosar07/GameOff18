@@ -36,6 +36,7 @@ class Enemy extends Entity
 		animation.add("idle", [1], 3, false);
         animation.add("run", [0, 1], 6, true);
         animation.add("hit", [2], 3, false);
+        animation.add("charging_attack", [3], 3, false);
 
         animation.play("run");
 
@@ -64,6 +65,7 @@ class Enemy extends Entity
                 {
                     chargingAttack = true;
                     currentChargeTime = 0;
+                    animation.play("charging_attack");
                 }
             }
         }
@@ -94,6 +96,7 @@ class Enemy extends Entity
                     attacking = true;
                     currentAttackTime = 0;
                     attackSignal.dispatch(this);
+                    animation.play("idle");
                 }
             }
             else if (attacking)
