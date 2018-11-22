@@ -9,6 +9,7 @@ import flixel.util.FlxSignal;
 
 class Player extends FlxSprite
 {
+	public var deathSignal:FlxSignal;
 	public var launchGrapplingSignal:FlxSignal;
 	public var attackSignal:FlxSignal;
 	public var pulled:Bool = false;
@@ -24,6 +25,7 @@ class Player extends FlxSprite
 	{
 		super(X, Y);
 		launchGrapplingSignal = new FlxSignal();
+		deathSignal = new FlxSignal();
 		attackSignal = new FlxSignal();
 
 		loadGraphic(AssetPaths.player__png, true, 8, 8);
@@ -41,6 +43,7 @@ class Player extends FlxSprite
 	{
 		drag.x = drag.y = 1600;
 		angle = 0;
+		health = 3;
 	}
 
 	override public function update(elapsed:Float):Void
@@ -79,18 +82,18 @@ class Player extends FlxSprite
 			}
 			else
 			{
-		trace(velocity);
 				var v:FlxVector = new FlxVector(velocity.x, velocity.y);
                 if (v.length < 2)
                 {
                     if (health > 0)
                     {
-						trace("end knocked");
                         knocked = false;
                         animation.play("idle");
                     }
                     else
                     {
+                        knocked = false;
+						deathSignal.dispatch();
                     }
                 }
 			}
@@ -145,4 +148,9 @@ class Player extends FlxSprite
 	{
 		knocked = true;
 	}
+
+    override public function hurt(damages:Float):Void
+    {
+        health -= damages;
+    }
 }

@@ -40,6 +40,7 @@ class PlayState extends FlxState
 		player = new Player(125, 150);
 		player.launchGrapplingSignal.add(launchGrappling);
 		player.attackSignal.add(attack);
+		player.deathSignal.add(playerDeath);
 
 		grappling = null;
 
@@ -197,7 +198,7 @@ class PlayState extends FlxState
 			var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(250);
 			player.velocity.set(v.x, v.y);
 
-			//player.hurt(1);
+			player.hurt(1);
 		}
 	}
 
@@ -230,5 +231,10 @@ class PlayState extends FlxState
 			destroyGrappling();
 
 		createEnemy(150, 150);
+	}
+
+	function playerDeath():Void
+	{
+		FlxG.resetState();
 	}
 }

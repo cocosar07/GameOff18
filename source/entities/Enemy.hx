@@ -62,7 +62,6 @@ class Enemy extends Entity
                 
                 if (flixel.math.FlxMath.distanceBetween(this, player) < 10)
                 {
-                    //trace("start charging attack");
                     chargingAttack = true;
                     currentChargeTime = 0;
                 }
@@ -91,7 +90,6 @@ class Enemy extends Entity
                 currentChargeTime += elapsed;
                 if (currentChargeTime >= attackChargeTime)
                 {
-                    //trace("attack");
                     chargingAttack = false;
                     attacking = true;
                     currentAttackTime = 0;
@@ -103,7 +101,6 @@ class Enemy extends Entity
                 currentAttackTime += elapsed;
                 if (currentAttackTime >= attackTime)
                 {
-                    //trace("end attack");
                     attacking = false;
                 }
             }
