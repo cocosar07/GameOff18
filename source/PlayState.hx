@@ -20,6 +20,7 @@ class PlayState extends FlxState
 	public var rocks:FlxGroup;
 	public var enemies:FlxGroup;
 	public var chains:FlxGroup;
+	public var enemySwords:FlxGroup;
 
 	override public function create():Void
 	{
@@ -29,8 +30,10 @@ class PlayState extends FlxState
 		rocks = new FlxGroup();
 		enemies = new FlxGroup();
 		chains = new FlxGroup();
+		enemySwords = new FlxGroup();
 
-		sword = new Sword();
+		sword = new Sword(AssetPaths.sword__png);
+		sword.kill();
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
 
@@ -50,6 +53,7 @@ class PlayState extends FlxState
 		add(player);
 		add(enemies);
 		add(rocks);
+		add(enemySwords);
 		add(sword);
 	}
 
@@ -163,31 +167,51 @@ class PlayState extends FlxState
 	public function attack():Void
 	{
 		sword.revive();
-		sword.animation.play("attack");
-
-		var dir:FlxPoint = FlxG.mouse.getWorldPosition().subtractPoint(player.getMidpoint());
-		var v:FlxVector = new FlxVector(dir.x, dir.y).normalize();
-
-		sword.setPosition(player.getMidpoint().x + v.x * 6, player.getMidpoint().y + v.y * 6);
-
-		sword.angle = flixel.math.FlxAngle.angleBetweenPoint(player, FlxG.mouse.getWorldPosition(), true);
+		
+		setupSword(sword, player, FlxG.mouse.getWorldPosition());
 
 		for (e in enemies)
 		{
 			var enemy:Enemy = cast e;
 			if (FlxG.pixelPerfectOverlap(sword, enemy))
 			{
-				enemy.knocked = true;
+				enemy.hit();
 				var diff:FlxPoint = enemy.getMidpoint().subtractPoint(player.getMidpoint());
 				var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(100);
 				enemy.velocity.set(v.x, v.y);
-				enemy.animation.play("hit");
 
 				enemy.hurt(1);
-				if (enemy.health <= 0)
-					killEnemy(enemy);
 			}
 		}
+	}
+
+	public function enemyAttack(e:Enemy):Void
+	{
+		var s:Sword = cast enemySwords.recycle(Sword);
+		setupSword(s, e, player.getMidpoint());
+
+		if (FlxG.pixelPerfectOverlap(s, player))
+		{
+			player.hit();
+			var diff:FlxPoint = player.getMidpoint().subtractPoint(e.getMidpoint());
+			var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(250);
+			player.velocity.set(v.x, v.y);
+
+			//player.hurt(1);
+		}
+	}
+
+	public function setupSword(s:Sword, origin:FlxSprite, target:FlxPoint):Void
+	{
+		s.animation.play("attack");
+
+		var dir:FlxPoint = new FlxPoint(target.x, target.y).subtractPoint(origin.getMidpoint());
+		var v:FlxVector = new FlxVector(dir.x, dir.y).normalize();
+
+		s.setPosition(origin.getMidpoint().x + v.x * 6, origin.getMidpoint().y + v.y * 6);
+		s.angle = flixel.math.FlxAngle.angleBetweenPoint(origin, target, true);
+
+		s.flipY = v.x > 0;
 	}
 
 	function createEnemy(?X:Float, ?Y:Float):Void
@@ -195,6 +219,8 @@ class PlayState extends FlxState
 		var e:Enemy = cast enemies.recycle(Enemy);
 		e.setPosition(Std.int(X/8)*8, Std.int(Y/8)*8);
 		e.player = player;
+		e.deathSignal.add(killEnemy);
+		e.attackSignal.add(enemyAttack);
 	}
 
 	function killEnemy(enemy:Enemy):Void

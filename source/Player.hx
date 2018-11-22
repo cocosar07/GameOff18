@@ -12,6 +12,7 @@ class Player extends FlxSprite
 	public var launchGrapplingSignal:FlxSignal;
 	public var attackSignal:FlxSignal;
 	public var pulled:Bool = false;
+	public var knocked:Bool = false;
 	public var attackTime:Float = 2/8;
 
 	var speed:Float = 100;
@@ -46,32 +47,52 @@ class Player extends FlxSprite
 	{
 		if (!pulled)
 		{
-			if (!attacking)
+			if (!knocked)
 			{
-				move();
-
-				if (FlxG.mouse.justPressed)
+				if (!attacking)
 				{
-					if (!attacking)
+					move();
+
+					if (FlxG.mouse.justPressed)
 					{
-						currentAttackTime = 0;
-						attacking = true;
-						velocity.set(0, 0);
-						attackSignal.dispatch();
+						if (!attacking)
+						{
+							currentAttackTime = 0;
+							attacking = true;
+							velocity.set(0, 0);
+							attackSignal.dispatch();
+						}
+					}
+					if (FlxG.mouse.justPressedRight)
+					{
+						launchGrapplingSignal.dispatch();
 					}
 				}
-				if (FlxG.mouse.justPressedRight)
+				else
 				{
-					launchGrapplingSignal.dispatch();
+					currentAttackTime += elapsed;
+					if (currentAttackTime >= attackTime)
+					{
+						attacking = false;
+					}
 				}
 			}
 			else
 			{
-				currentAttackTime += elapsed;
-				if (currentAttackTime >= attackTime)
-				{
-					attacking = false;
-				}
+		trace(velocity);
+				var v:FlxVector = new FlxVector(velocity.x, velocity.y);
+                if (v.length < 2)
+                {
+                    if (health > 0)
+                    {
+						trace("end knocked");
+                        knocked = false;
+                        animation.play("idle");
+                    }
+                    else
+                    {
+                    }
+                }
 			}
 		}
 
@@ -118,5 +139,10 @@ class Player extends FlxSprite
 		{
 			animation.play("idle");
 		}
+	}
+
+	public function hit():Void
+	{
+		knocked = true;
 	}
 }
