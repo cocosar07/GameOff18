@@ -8,6 +8,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
+import flixel.util.FlxTimer;
 import entities.Entity;
 import entities.Enemy;
 
@@ -30,7 +31,9 @@ class PlayState extends FlxState
 	public var soundGrapplingHit:FlxSound;
 	public var soundEnemyDrown:FlxSound;
 
-	public var timer:TimerText;
+	public var timerText:TimerText;
+
+	public var enemySpawnTimer:FlxTimer;
 
 	override public function create():Void
 	{
@@ -74,8 +77,11 @@ class PlayState extends FlxState
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
 
-		timer = new TimerText(0, 0, 0);
-		add(timer);
+		timerText = new TimerText(0, 0, 0);
+		add(timerText);
+
+		enemySpawnTimer = new FlxTimer();
+		enemySpawnTimer.start(5, spawnEnemies, 0);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -154,7 +160,7 @@ class PlayState extends FlxState
 	{
 		var entity:Entity = cast other;
 
-		if (entity == null)
+		if (entity == null || !grappling.launched)
 			return;
 	
 		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);	
@@ -183,8 +189,6 @@ class PlayState extends FlxState
 		{
 			item.kill();
 			soundEnemyDrown.play();
-
-			createEnemy(150, 150);
 		}
 	}
 
@@ -262,7 +266,10 @@ class PlayState extends FlxState
 		enemy.kill();
 		if (grappling != null && enemy == grappling.grabbedItem)
 			destroyGrappling();
+	}
 
+	function spawnEnemies(_:FlxTimer):Void
+	{
 		createEnemy(150, 150);
 	}
 
