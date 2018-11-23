@@ -105,6 +105,7 @@ class Enemy extends Entity
                 if (currentAttackTime >= attackTime)
                 {
                     attacking = false;
+                    animation.play("run");
                 }
             }
         }
@@ -119,6 +120,7 @@ class Enemy extends Entity
         health = 3;
 
         animation.play("run");
+        attacking = chargingAttack = false;
     }
 
     public function hit():Void

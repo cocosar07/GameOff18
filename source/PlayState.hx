@@ -30,6 +30,8 @@ class PlayState extends FlxState
 	public var soundGrapplingHit:FlxSound;
 	public var soundEnemyDrown:FlxSound;
 
+	public var timer:TimerText;
+
 	override public function create():Void
 	{
 		super.create();
@@ -71,6 +73,9 @@ class PlayState extends FlxState
 		soundPlayerHit = FlxG.sound.load(AssetPaths.player_hit__wav);
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
+
+		timer = new TimerText(0, 0, 0);
+		add(timer);
 	}
 
 	override public function update(elapsed:Float):Void
