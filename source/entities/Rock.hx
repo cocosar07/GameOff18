@@ -8,7 +8,7 @@ class Rock extends Entity
 
 		loadGraphic(AssetPaths.tileset__png, true, 8, 8);
 		var r:flixel.math.FlxRandom = new flixel.math.FlxRandom();
-		animation.add("0", [r.int(50, 51)], 1, false);
+		animation.add("0", [r.int(16, 17)], 1, false);
 		animation.play("0");
 
 		this.immovable = true;
