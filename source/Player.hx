@@ -38,13 +38,13 @@ class Player extends FlxSprite
 		animation.add("run", [0, 1], 6, true);
 
 		setup();
+		health = 3;
 	}
 
 	public function setup():Void
 	{
 		drag.x = drag.y = 1600;
 		angle = 0;
-		health = 3;
 	}
 
 	override public function update(elapsed:Float):Void

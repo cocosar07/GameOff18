@@ -2,6 +2,7 @@ package;
 
 import flixel.text.FlxText;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
 
 class TimerText extends FlxText
 {
@@ -15,6 +16,7 @@ class TimerText extends FlxText
 		scale.set(0.8, 0.8);
 		centerOrigin();
 		scrollFactor.set(0, 0);
+		setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
 
 		timer = new FlxTimer();
 		timer.start(1, onTimerComplete, 0);

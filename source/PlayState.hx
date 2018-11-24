@@ -24,6 +24,7 @@ class PlayState extends FlxState
 	public var chains:FlxGroup;
 	public var enemySwords:FlxGroup;
 	public var smoke:FlxGroup;
+	public var shadows:FlxGroup;
 
 	public var soundPlayerAttack:FlxSound;
 	public var soundEnemyAttack:FlxSound;
@@ -47,6 +48,7 @@ class PlayState extends FlxState
 		chains = new FlxGroup();
 		enemySwords = new FlxGroup();
 		smoke = new FlxGroup();
+		shadows = new FlxGroup();
 
 		sword = new Sword(AssetPaths.sword__png);
 		sword.kill();
@@ -58,6 +60,10 @@ class PlayState extends FlxState
 		player.attackSignal.add(attack);
 		player.deathSignal.add(playerDeath);
 
+		var playerShadow:Shadow = new Shadow();
+		playerShadow.target = player;
+		playerShadow.animation.play("idle");
+
 		grappling = null;
 
 		createEnemy(150, 150);
@@ -66,6 +72,8 @@ class PlayState extends FlxState
 
 		add(map.backgroundLayer);
 		add(map.collisionLayer);
+		add(shadows);
+		add(playerShadow);
 		add(chains);
 		add(player);
 		add(enemies);
@@ -215,6 +223,7 @@ class PlayState extends FlxState
 
 				enemy.hurt(1);
 				soundEnemyHit.play();
+				FlxG.camera.shake(0.01, 0.08);
 			}
 		}
 
@@ -264,6 +273,11 @@ class PlayState extends FlxState
 		e.player = player;
 		e.deathSignal.add(killEnemy);
 		e.attackSignal.add(enemyAttack);
+		e.kill();
+
+		var s:Shadow = cast shadows.recycle(Shadow);
+		s.target = e;
+		s.animation.play("fall");
 	}
 
 	function killEnemy(enemy:Enemy):Void
