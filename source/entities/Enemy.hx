@@ -93,10 +93,17 @@ class Enemy extends Entity
                 if (currentChargeTime >= attackChargeTime)
                 {
                     chargingAttack = false;
-                    attacking = true;
-                    currentAttackTime = 0;
-                    attackSignal.dispatch(this);
-                    animation.play("idle");
+                    if (pulled)
+                    {
+                        animation.play("run");
+                    }
+                    else
+                    {
+                        attacking = true;
+                        currentAttackTime = 0;
+                        attackSignal.dispatch(this);
+                        animation.play("idle");
+                    }
                 }
             }
             else if (attacking)
