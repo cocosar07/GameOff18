@@ -9,6 +9,7 @@ import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.util.FlxTimer;
+import flixel.tile.FlxTilemap;
 import entities.Entity;
 import entities.Enemy;
 
@@ -37,6 +38,7 @@ class PlayState extends FlxState
 	public var timerText:TimerText;
 
 	public var enemySpawnTimer:FlxTimer;
+	public var enemySpawnPoints:Array<FlxPoint>;
 
 	override public function create():Void
 	{
@@ -54,6 +56,7 @@ class PlayState extends FlxState
 		sword.kill();
 
 		map = new TileMap(AssetPaths.map1__tmx, this);
+		setupEnemySpawnPoints();
 
 		player = new Player(125, 150);
 		player.launchGrapplingSignal.add(launchGrappling);
@@ -95,6 +98,19 @@ class PlayState extends FlxState
 
 		enemySpawnTimer = new FlxTimer();
 		enemySpawnTimer.start(5, spawnEnemies, 0);
+	}
+
+	function setupEnemySpawnPoints():Void
+	{
+		enemySpawnPoints = new Array<FlxPoint>();
+		var tilemap:FlxTilemap = cast map.backgroundLayer.getFirstAlive();
+
+		for (i in 1...tilemap.totalTiles)
+		{
+			var a = tilemap.getTileCoords(i, true);
+			if (a != null)
+				enemySpawnPoints = enemySpawnPoints.concat(a);
+		}
 	}
 
 	override public function update(elapsed:Float):Void
@@ -268,16 +284,21 @@ class PlayState extends FlxState
 
 	function createEnemy(?X:Float, ?Y:Float):Void
 	{
+		var s:Shadow = cast shadows.recycle(Shadow);
+		s.setPosition(X, Y);
+		s.animation.play("fall");
+		s.endFallSignal.add(endFallShadow);
+	}
+
+	function endFallShadow(s:Shadow):Void
+	{
 		var e:Enemy = cast enemies.recycle(Enemy);
-		e.setPosition(Std.int(X/8)*8, Std.int(Y/8)*8);
+		e.setPosition(s.x, s.y);
 		e.player = player;
 		e.deathSignal.add(killEnemy);
 		e.attackSignal.add(enemyAttack);
-		e.kill();
 
-		var s:Shadow = cast shadows.recycle(Shadow);
 		s.target = e;
-		s.animation.play("fall");
 	}
 
 	function killEnemy(enemy:Enemy):Void
@@ -295,7 +316,11 @@ class PlayState extends FlxState
 
 	function spawnEnemies(_:FlxTimer):Void
 	{
-		createEnemy(150, 150);
+		for (i in 0...3)
+		{
+			var p:FlxPoint = new flixel.math.FlxRandom().getObject(enemySpawnPoints);
+			createEnemy(p.x, p.y);
+		}
 	}
 
 	function playerDeath():Void

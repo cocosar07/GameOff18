@@ -25,7 +25,6 @@ class Shadow extends FlxSprite
     {
         if (anim == "fall")
         {
-            target.revive();
             endFallSignal.dispatch(this);
         }
     }
@@ -34,13 +33,16 @@ class Shadow extends FlxSprite
 	{
         super.update(elapsed);
 
-        if (target.exists == false && animation.finished)
+        if (animation.finished)
         {
-            kill();
-            return;
-        }
+            if (target.exists == false)
+            {
+                kill();
+                return;
+            }
 
-        setPosition(target.getMidpoint().x, target.getMidpoint().y + 4);
+            setPosition(target.getMidpoint().x, target.getMidpoint().y + 4);
+        }
     }
 
     override function setPosition(X:Float = 0, Y:Float = 0):Void
