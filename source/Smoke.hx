@@ -1,23 +1,22 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.FlxObject;
 
-class Sword extends FlxSprite
+class Smoke extends FlxSprite
 {
-	public function new(?X:Float=0, ?Y:Float=0, ?filename:String=AssetPaths.enemy_sword__png)
+	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
 
-        loadGraphic(filename, true, 8, 16);
+        loadGraphic(AssetPaths.smoke__png, true, 8, 8);
 
-        animation.add("attack", [0, 1], 8, false);
+        animation.add("idle", [0, 1, 2, 3], 10, false);
         animation.finishCallback = finishCallback;
 	}
 
     public function finishCallback(anim:String):Void
     {
-        if (anim == "attack")
+        if (anim == "idle")
             kill();
     }
 

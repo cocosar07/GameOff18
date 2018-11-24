@@ -23,6 +23,7 @@ class PlayState extends FlxState
 	public var enemies:FlxGroup;
 	public var chains:FlxGroup;
 	public var enemySwords:FlxGroup;
+	public var smoke:FlxGroup;
 
 	public var soundPlayerAttack:FlxSound;
 	public var soundEnemyAttack:FlxSound;
@@ -30,6 +31,7 @@ class PlayState extends FlxState
 	public var soundEnemyHit:FlxSound;
 	public var soundGrapplingHit:FlxSound;
 	public var soundEnemyDrown:FlxSound;
+	public var soundEnemyDisappear:FlxSound;
 
 	public var timerText:TimerText;
 
@@ -44,6 +46,7 @@ class PlayState extends FlxState
 		enemies = new FlxGroup();
 		chains = new FlxGroup();
 		enemySwords = new FlxGroup();
+		smoke = new FlxGroup();
 
 		sword = new Sword(AssetPaths.sword__png);
 		sword.kill();
@@ -69,6 +72,7 @@ class PlayState extends FlxState
 		add(rocks);
 		add(enemySwords);
 		add(sword);
+		add(smoke);
 
 		soundEnemyAttack = FlxG.sound.load(AssetPaths.attack__wav);
 		soundPlayerAttack = FlxG.sound.load(AssetPaths.attack1__wav);
@@ -76,6 +80,7 @@ class PlayState extends FlxState
 		soundPlayerHit = FlxG.sound.load(AssetPaths.player_hit__wav);
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
+		soundEnemyDisappear = FlxG.sound.load(AssetPaths.enemy_disappear__wav);
 
 		timerText = new TimerText(0, 0, 0);
 		add(timerText);
@@ -263,6 +268,12 @@ class PlayState extends FlxState
 
 	function killEnemy(enemy:Enemy):Void
 	{
+		var s:Smoke = cast smoke.recycle(Smoke);
+		s.setPosition(enemy.getMidpoint().x, enemy.getMidpoint().y);
+		s.animation.play("idle");
+
+		soundEnemyDisappear.play();
+
 		enemy.kill();
 		if (grappling != null && enemy == grappling.grabbedItem)
 			destroyGrappling();
