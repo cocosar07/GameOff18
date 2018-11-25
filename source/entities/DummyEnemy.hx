@@ -10,12 +10,10 @@ class DummyEnemy extends Enemy
 	{
 		super(X, Y);
         
-        loadGraphic(AssetPaths.enemies__png, true, 8, 8);
+        loadGraphic(AssetPaths.dummy_enemy__png, true, 8, 8);
 
-		animation.add("idle", [1], 3, false);
         animation.add("run", [0, 1], 6, true);
         animation.add("hit", [2], 3, false);
-        animation.add("charging_attack", [3], 3, false);
 
         animation.play("run");
 

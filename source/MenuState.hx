@@ -63,6 +63,7 @@ class MenuState extends FlxState
 		createEnemy(125, 90);
 
 		enemy = new DummyEnemy();
+		enemy.facing = FlxObject.LEFT;
 		enemy.kill();
 
 		FlxG.camera.follow(player, LOCKON, 0.3);

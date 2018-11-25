@@ -25,7 +25,7 @@ class WalkingEnemy extends Enemy
         attackSignal = new FlxTypedSignal<Enemy->Void>();
         
         player = p;
-        loadGraphic(AssetPaths.enemies__png, true, 8, 8);
+        loadGraphic(AssetPaths.walking_enemy__png, true, 8, 8);
 
 		animation.add("idle", [1], 3, false);
         animation.add("run", [0, 1], 6, true);
