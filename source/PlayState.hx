@@ -294,7 +294,7 @@ class PlayState extends FlxState
 	function endFallShadow(s:Shadow):Void
 	{
 		var e:WalkingEnemy = cast enemies.recycle(WalkingEnemy);
-		e.setPosition(s.x, s.y);
+		e.setPosition(s.x + 4, s.y);
 		e.player = player;
 		e.deathSignal.add(killEnemy);
 		e.attackSignal.add(enemyAttack);
