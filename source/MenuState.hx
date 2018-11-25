@@ -10,6 +10,7 @@ import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import entities.Entity;
 import entities.Enemy;
+import entities.DummyEnemy;
 
 class MenuState extends FlxState
 {
@@ -17,9 +18,9 @@ class MenuState extends FlxState
 	public var player:Player;
 	public var grappling:Grappling;
 	public var sword:Sword;
+	public var enemy:DummyEnemy;
 
 	public var rocks:FlxGroup;
-	public var enemies:FlxGroup;
 	public var chains:FlxGroup;
 	public var enemySwords:FlxGroup;
 	public var smoke:FlxGroup;
@@ -39,7 +40,6 @@ class MenuState extends FlxState
 		FlxG.camera.bgColor.setRGBFloat(108.9/255, 194.0/255, 202.0/255);
 
 		rocks = new FlxGroup();
-		enemies = new FlxGroup();
 		chains = new FlxGroup();
 		enemySwords = new FlxGroup();
 		smoke = new FlxGroup();
@@ -60,7 +60,10 @@ class MenuState extends FlxState
 
 		grappling = null;
 
-		createEnemy(125, 85);
+		createEnemy(125, 90);
+
+		enemy = new DummyEnemy();
+		enemy.kill();
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
@@ -70,7 +73,7 @@ class MenuState extends FlxState
 		add(playerShadow);
 		add(chains);
 		add(player);
-		add(enemies);
+		add(enemy);
 		add(rocks);
 		add(enemySwords);
 		add(sword);
@@ -93,23 +96,21 @@ class MenuState extends FlxState
 		{
 			map.collideWithLevel(player);
 			FlxG.overlap(rocks, player, null, FlxObject.separate);
-			FlxG.overlap(enemies, player, null, FlxObject.separate);
+			FlxG.overlap(enemy, player, null, FlxObject.separate);
 		}
 
-		for (e in enemies)
+		var e:Entity = cast enemy;
+
+		if (e != null && !e.pulled)
 		{
-			var enemy:Entity = cast e;
-			if (!enemy.pulled)
-			{
-				map.collideWithLevel(enemy);
-				FlxG.overlap(rocks, enemy, null, FlxObject.separate);
-			}
+			map.collideWithLevel(e);
+			FlxG.overlap(rocks, e, null, FlxObject.separate);
 		}
 
 		if (grappling != null && grappling.launched)
 		{
 			FlxG.overlap(rocks, grappling, grapplingCollision);
-			FlxG.overlap(enemies, grappling, grapplingCollision);
+			FlxG.overlap(enemy, grappling, grapplingCollision);
 		}
 	}
 
@@ -200,20 +201,16 @@ class MenuState extends FlxState
 		
 		setupSword(sword, player, FlxG.mouse.getWorldPosition());
 
-		for (e in enemies)
+		if (FlxG.pixelPerfectOverlap(sword, enemy))
 		{
-			var enemy:Enemy = cast e;
-			if (FlxG.pixelPerfectOverlap(sword, enemy))
-			{
-				enemy.hit();
-				var diff:FlxPoint = enemy.getMidpoint().subtractPoint(player.getMidpoint());
-				var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(100);
-				enemy.velocity.set(v.x, v.y);
+			enemy.hit();
+			var diff:FlxPoint = enemy.getMidpoint().subtractPoint(player.getMidpoint());
+			var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(100);
+			enemy.velocity.set(v.x, v.y);
 
-				enemy.hurt(1);
-				soundEnemyHit.play();
-				FlxG.camera.shake(0.01, 0.08);
-			}
+			enemy.hurt(1);
+			soundEnemyHit.play();
+			FlxG.camera.shake(0.01, 0.08);
 		}
 
 		soundPlayerAttack.play();
@@ -242,12 +239,11 @@ class MenuState extends FlxState
 
 	function endFallShadow(s:Shadow):Void
 	{
-		var e:Enemy = cast enemies.recycle(Enemy);
-		e.setPosition(s.x, s.y);
-		e.player = player;
-		e.deathSignal.add(killEnemy);
+		enemy.revive();
+		enemy.setPosition(s.x+4, s.y);
+		enemy.deathSignal.add(killEnemy);
 
-		s.target = e;
+		s.target = enemy;
 	}
 
 	function killEnemy(enemy:Enemy):Void

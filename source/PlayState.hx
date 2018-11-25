@@ -12,6 +12,7 @@ import flixel.util.FlxTimer;
 import flixel.tile.FlxTilemap;
 import entities.Entity;
 import entities.Enemy;
+import entities.WalkingEnemy;
 
 class PlayState extends FlxState
 {
@@ -292,7 +293,7 @@ class PlayState extends FlxState
 
 	function endFallShadow(s:Shadow):Void
 	{
-		var e:Enemy = cast enemies.recycle(Enemy);
+		var e:WalkingEnemy = cast enemies.recycle(WalkingEnemy);
 		e.setPosition(s.x, s.y);
 		e.player = player;
 		e.deathSignal.add(killEnemy);
