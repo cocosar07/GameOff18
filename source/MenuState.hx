@@ -8,6 +8,8 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import entities.Entity;
 import entities.Enemy;
 import entities.DummyEnemy;
@@ -33,6 +35,10 @@ class MenuState extends FlxState
 	public var soundGrapplingHit:FlxSound;
 	public var soundEnemyDrown:FlxSound;
 	public var soundEnemyDisappear:FlxSound;
+
+	public var movementText:FlxText;
+	public var attackText:FlxText;
+	public var grapplingText:FlxText;
 
 	override public function create():Void
 	{
@@ -68,6 +74,25 @@ class MenuState extends FlxState
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
+		movementText = new FlxText(0, 0, 150, "Arrow/WASD/ZQSD: Move");
+		movementText.scrollFactor.set(0, 0);
+		movementText.scale.set(0.6, 0.6);
+		movementText.setPosition(0, 0);
+		movementText.alignment = FlxTextAlign.LEFT;
+		movementText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+
+		attackText = new FlxText(0, 10, 150, "Left click: ???");
+		attackText.scrollFactor.set(0, 0);
+		attackText.scale.set(0.6, 0.6);
+		attackText.alignment = FlxTextAlign.LEFT;
+		attackText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+
+		grapplingText = new FlxText(0, 20, 150, "Right click: ???");
+		grapplingText.scrollFactor.set(0, 0);
+		grapplingText.scale.set(0.6, 0.6);
+		grapplingText.alignment = FlxTextAlign.LEFT;
+		grapplingText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+
 		add(map.backgroundLayer);
 		add(map.collisionLayer);
 		add(shadows);
@@ -79,6 +104,9 @@ class MenuState extends FlxState
 		add(enemySwords);
 		add(sword);
 		add(smoke);
+		add(movementText);
+		add(attackText);
+		add(grapplingText);
 
 		soundEnemyAttack = FlxG.sound.load(AssetPaths.attack__wav);
 		soundPlayerAttack = FlxG.sound.load(AssetPaths.attack1__wav);
@@ -119,6 +147,8 @@ class MenuState extends FlxState
 	{
 		if (grappling != null)
 			return;
+
+		grapplingText.text = "Right click: Grappling";
 
 		grappling = new Grappling(0, 0, player);
 		grappling.setPosition(player.getMidpoint().x, player.getMidpoint().y);
@@ -198,6 +228,8 @@ class MenuState extends FlxState
 
 	public function attack():Void
 	{
+		attackText.text = "Left click: Attack";
+
 		sword.revive();
 		
 		setupSword(sword, player, FlxG.mouse.getWorldPosition());
