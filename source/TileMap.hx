@@ -17,7 +17,7 @@ class TileMap extends TiledMap
 	public var backgroundLayer:FlxGroup;
 	public var collisionLayer:FlxGroup;
 
-	public function new(tiledLevel:FlxTiledMapAsset, state:PlayState)
+	public function new(tiledLevel:FlxTiledMapAsset, rocks:FlxGroup)
 	{
 		super(tiledLevel);
 
@@ -50,7 +50,7 @@ class TileMap extends TiledMap
 				var objectLayer:TiledObjectLayer = cast layer;
 				for (o in objectLayer.objects)
 				{
-					var r:Rock = cast state.rocks.recycle(Rock);
+					var r:Rock = cast rocks.recycle(Rock);
 					r.setPosition(o.x + r.width/2, o.y - r.height/2);
 				}
 			}

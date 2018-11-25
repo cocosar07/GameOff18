@@ -8,12 +8,10 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
-import flixel.util.FlxTimer;
-import flixel.tile.FlxTilemap;
 import entities.Entity;
 import entities.Enemy;
 
-class PlayState extends FlxState
+class MenuState extends FlxState
 {
 	public var map:TileMap;
 	public var player:Player;
@@ -35,11 +33,6 @@ class PlayState extends FlxState
 	public var soundEnemyDrown:FlxSound;
 	public var soundEnemyDisappear:FlxSound;
 
-	public var timerText:TimerText;
-
-	public var enemySpawnTimer:FlxTimer;
-	public var enemySpawnPoints:Array<FlxPoint>;
-
 	override public function create():Void
 	{
 		super.create();
@@ -55,13 +48,11 @@ class PlayState extends FlxState
 		sword = new Sword(AssetPaths.sword__png);
 		sword.kill();
 
-		map = new TileMap(AssetPaths.map1__tmx, this.rocks);
-		setupEnemySpawnPoints();
+		map = new TileMap(AssetPaths.menu_map__tmx, this.rocks);
 
-		player = new Player(125, 150);
+		player = new Player(50, 70);
 		player.launchGrapplingSignal.add(launchGrappling);
 		player.attackSignal.add(attack);
-		player.deathSignal.add(playerDeath);
 
 		var playerShadow:Shadow = new Shadow();
 		playerShadow.target = player;
@@ -69,7 +60,7 @@ class PlayState extends FlxState
 
 		grappling = null;
 
-		createEnemy(150, 150);
+		createEnemy(125, 85);
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
@@ -92,25 +83,6 @@ class PlayState extends FlxState
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
 		soundEnemyDisappear = FlxG.sound.load(AssetPaths.enemy_disappear__wav);
-
-		timerText = new TimerText(0, 0, 0);
-		add(timerText);
-
-		enemySpawnTimer = new FlxTimer();
-		enemySpawnTimer.start(5, spawnEnemies, 0);
-	}
-
-	function setupEnemySpawnPoints():Void
-	{
-		enemySpawnPoints = new Array<FlxPoint>();
-		var tilemap:FlxTilemap = cast map.backgroundLayer.getFirstAlive();
-
-		for (i in 1...tilemap.totalTiles)
-		{
-			var a = tilemap.getTileCoords(i, true);
-			if (a != null)
-				enemySpawnPoints = enemySpawnPoints.concat(a);
-		}
 	}
 
 	override public function update(elapsed:Float):Void
@@ -218,6 +190,7 @@ class PlayState extends FlxState
 		{
 			item.kill();
 			soundEnemyDrown.play();
+            FlxG.switchState(new PlayState());
 		}
 	}
 
@@ -246,29 +219,6 @@ class PlayState extends FlxState
 		soundPlayerAttack.play();
 	}
 
-	public function enemyAttack(e:Enemy):Void
-	{
-		var s:Sword = cast enemySwords.recycle(Sword);
-		setupSword(s, e, player.getMidpoint());
-
-		if (FlxG.pixelPerfectOverlap(s, player))
-		{
-			player.hit();
-			var diff:FlxPoint = player.getMidpoint().subtractPoint(e.getMidpoint());
-			var v:FlxVector = new FlxVector(diff.x, diff.y).normalize().scale(250);
-			player.velocity.set(v.x, v.y);
-
-			player.hurt(1);
-
-			soundPlayerHit.play();
-			FlxG.camera.shake(0.03, 0.1);
-			if (player.health <= 0)
-				FlxG.camera.flash(flixel.util.FlxColor.RED, 0.2);
-		}
-
-		soundEnemyAttack.play();
-	}
-
 	public function setupSword(s:Sword, origin:FlxSprite, target:FlxPoint):Void
 	{
 		s.animation.play("attack");
@@ -287,7 +237,7 @@ class PlayState extends FlxState
 		var s:Shadow = cast shadows.recycle(Shadow);
 		s.setPosition(X, Y);
 		s.animation.play("fall");
-		s.endFallSignal.add(endFallShadow);
+        s.endFallSignal.add(endFallShadow);
 	}
 
 	function endFallShadow(s:Shadow):Void
@@ -296,7 +246,6 @@ class PlayState extends FlxState
 		e.setPosition(s.x, s.y);
 		e.player = player;
 		e.deathSignal.add(killEnemy);
-		e.attackSignal.add(enemyAttack);
 
 		s.target = e;
 	}
@@ -306,6 +255,7 @@ class PlayState extends FlxState
 		var s:Smoke = cast smoke.recycle(Smoke);
 		s.setPosition(enemy.getMidpoint().x, enemy.getMidpoint().y);
 		s.animation.play("idle");
+		s.endAnimationSignal.add(endSmoke);
 
 		soundEnemyDisappear.play();
 
@@ -314,17 +264,8 @@ class PlayState extends FlxState
 			destroyGrappling();
 	}
 
-	function spawnEnemies(_:FlxTimer):Void
-	{
-		for (i in 0...3)
-		{
-			var p:FlxPoint = new flixel.math.FlxRandom().getObject(enemySpawnPoints);
-			createEnemy(p.x, p.y);
-		}
-	}
-
-	function playerDeath():Void
-	{
-		FlxG.resetState();
-	}
+    function endSmoke():Void
+    {
+        FlxG.switchState(new PlayState());
+    }
 }
