@@ -36,6 +36,7 @@ class Player extends FlxSprite
 		animation.add("idle", [1], 3, false);
 		animation.add("hit", [2], 3, false);
 		animation.add("run", [0, 1], 6, true);
+		animation.add("dead", [3], 3, false);
 
 		setup();
 		health = 3;
@@ -94,6 +95,8 @@ class Player extends FlxSprite
                     else
                     {
                         knocked = false;
+						active = false;
+						animation.play("dead");
 						deathSignal.dispatch();
                     }
                 }

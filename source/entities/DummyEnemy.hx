@@ -20,7 +20,7 @@ class DummyEnemy extends Enemy
         pullable = true;
 
         drag.x = drag.y = 400;
-        health = 3;
+        health = 2;
 	}
 
 	override public function update(elapsed:Float):Void
@@ -34,7 +34,7 @@ class DummyEnemy extends Enemy
 
         velocity.set(0, 0);
         pulled = false;
-        health = 3;
+        health = 2;
 
         animation.play("run");
     }

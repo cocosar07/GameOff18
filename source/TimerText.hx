@@ -6,7 +6,7 @@ import flixel.util.FlxColor;
 
 class TimerText extends FlxText
 {
-	var timer:FlxTimer;
+	public var timer:FlxTimer;
 	var seconds:Int;
 	var minutes:Int;
 

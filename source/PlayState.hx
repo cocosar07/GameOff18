@@ -10,6 +10,9 @@ import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.util.FlxTimer;
 import flixel.tile.FlxTilemap;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.ui.FlxButton;
 import entities.Entity;
 import entities.Enemy;
 import entities.WalkingEnemy;
@@ -40,6 +43,7 @@ class PlayState extends FlxState
 
 	public var enemySpawnTimer:FlxTimer;
 	public var enemySpawnPoints:Array<FlxPoint>;
+	public var enemyKilledCount:Int = 0;
 
 	override public function create():Void
 	{
@@ -313,6 +317,8 @@ class PlayState extends FlxState
 		enemy.kill();
 		if (grappling != null && enemy == grappling.grabbedItem)
 			destroyGrappling();
+		
+		enemyKilledCount += 1;
 	}
 
 	function spawnEnemies(_:FlxTimer):Void
@@ -326,6 +332,40 @@ class PlayState extends FlxState
 
 	function playerDeath():Void
 	{
-		FlxG.resetState();
+		enemySpawnTimer.cancel();
+		enemies.active = false;
+
+		var endText:FlxText = new FlxText(0, 0, 0, "Your survived for:");
+		endText.scrollFactor.set(0, 0);
+		endText.screenCenter();
+		endText.y -= 40;
+		endText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+
+		add(endText);
+
+		timerText.timer.cancel();
+		timerText.screenCenter();
+		timerText.y -= 20;
+
+		var killsText:FlxText = new FlxText(0, 0, 0, "(" + enemyKilledCount + "  kills)");
+		killsText.scrollFactor.set(0, 0);
+		killsText.scale.set(0.8, 0.8);
+		killsText.screenCenter();
+		killsText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+
+		add(killsText);
+
+		var restartButton:FlxButton = new FlxButton(0, 0, "Restart", FlxG.resetState);
+		restartButton.scale.set(0.4, 0.4);
+		restartButton.updateHitbox();
+		restartButton.screenCenter();
+		restartButton.y += 30;
+
+		restartButton.label.scale.set(0.4, 0.4);
+		restartButton.label.updateHitbox();
+		restartButton.label.centerOffsets();
+		restartButton.label.offset.y += 2;
+
+		add(restartButton);
 	}
 }
