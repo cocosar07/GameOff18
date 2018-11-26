@@ -315,6 +315,7 @@ class PlayState extends FlxState
 		soundEnemyDisappear.play();
 
 		enemy.kill();
+		enemy.setPosition(0, 0);
 		if (grappling != null && enemy == grappling.grabbedItem)
 			destroyGrappling();
 		
