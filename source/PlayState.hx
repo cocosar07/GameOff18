@@ -153,6 +153,7 @@ class PlayState extends FlxState
 		{
 			FlxG.overlap(rocks, grappling, grapplingCollision);
 			FlxG.overlap(enemies, grappling, grapplingCollision);
+			FlxG.overlap(ghosts, grappling, grapplingCollision);
 		}
 	}
 
@@ -206,7 +207,7 @@ class PlayState extends FlxState
 
 		if (entity == null || !grappling.launched)
 			return;
-	
+
 		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);	
 		grappling.grabbedItem = entity;
 
@@ -225,10 +226,21 @@ class PlayState extends FlxState
 		}
 
 		soundGrapplingHit.play();
+
+		if (Std.is(entity, GhostEnemy))
+		{
+			createEnemy(entity.getMidpoint().x, entity.getMidpoint().y);
+		}
 	}
 
 	public function endPullItem(item:Entity):Void
 	{
+		if (Std.is(item, GhostEnemy))
+		{
+			item.kill();
+			return;
+		}
+
 		if (map.collideWithLevel(item, null, FlxObject.updateTouchingFlags))
 		{
 			item.kill();
@@ -307,14 +319,14 @@ class PlayState extends FlxState
 
 	function endFallShadow(s:Shadow):Void
 	{
-		s.target = createEnemy(s.x + 4, s.y);
+		s.target = createEnemy(s.x + 4, s.y, 90);
 	}
 
-	function createEnemy(X:Float, Y:Float):Enemy
+	function createEnemy(X:Float, Y:Float, ?normalEnemyChance:Float = 100):Enemy
 	{
 		var e:FollowingEnemy;
 
-		if (rand.bool(90))
+		if (rand.bool(normalEnemyChance))
 			e = cast enemies.recycle(WalkingEnemy);
 		else
 			e = cast ghosts.recycle(GhostEnemy);
