@@ -139,7 +139,7 @@ class Player extends FlxSprite
 
 			if (velocity.x < 0)
 				facing = FlxObject.LEFT;
-			else
+			else if (velocity.x > 0)
 				facing = FlxObject.RIGHT;
 		}
 		else

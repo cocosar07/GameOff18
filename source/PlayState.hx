@@ -6,6 +6,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
+import flixel.math.FlxRandom;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.util.FlxTimer;
@@ -15,7 +16,9 @@ import flixel.util.FlxColor;
 import flixel.ui.FlxButton;
 import entities.Entity;
 import entities.Enemy;
+import entities.FollowingEnemy;
 import entities.WalkingEnemy;
+import entities.GhostEnemy;
 
 class PlayState extends FlxState
 {
@@ -26,6 +29,7 @@ class PlayState extends FlxState
 
 	public var rocks:FlxGroup;
 	public var enemies:FlxGroup;
+	public var ghosts:FlxGroup;
 	public var chains:FlxGroup;
 	public var enemySwords:FlxGroup;
 	public var smoke:FlxGroup;
@@ -45,6 +49,8 @@ class PlayState extends FlxState
 	public var enemySpawnPoints:Array<FlxPoint>;
 	public var enemyKilledCount:Int = 0;
 
+	public var rand:FlxRandom;
+
 	override public function create():Void
 	{
 		super.create();
@@ -52,6 +58,7 @@ class PlayState extends FlxState
 
 		rocks = new FlxGroup();
 		enemies = new FlxGroup();
+		ghosts = new FlxGroup();
 		chains = new FlxGroup();
 		enemySwords = new FlxGroup();
 		smoke = new FlxGroup();
@@ -74,7 +81,7 @@ class PlayState extends FlxState
 
 		grappling = null;
 
-		createEnemy(150, 150);
+		spawnEnemy(150, 150);
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
@@ -88,6 +95,7 @@ class PlayState extends FlxState
 		add(rocks);
 		add(enemySwords);
 		add(sword);
+		add(ghosts);
 		add(smoke);
 
 		soundEnemyAttack = FlxG.sound.load(AssetPaths.attack__wav);
@@ -103,6 +111,8 @@ class PlayState extends FlxState
 
 		enemySpawnTimer = new FlxTimer();
 		enemySpawnTimer.start(5, spawnEnemies, 0);
+
+		rand = new FlxRandom();
 	}
 
 	function setupEnemySpawnPoints():Void
@@ -287,7 +297,7 @@ class PlayState extends FlxState
 		s.flipY = v.x > 0;
 	}
 
-	function createEnemy(?X:Float, ?Y:Float):Void
+	function spawnEnemy(?X:Float, ?Y:Float):Void
 	{
 		var s:Shadow = cast shadows.recycle(Shadow);
 		s.setPosition(X, Y);
@@ -297,13 +307,24 @@ class PlayState extends FlxState
 
 	function endFallShadow(s:Shadow):Void
 	{
-		var e:WalkingEnemy = cast enemies.recycle(WalkingEnemy);
-		e.setPosition(s.x + 4, s.y);
+		s.target = createEnemy(s.x + 4, s.y);
+	}
+
+	function createEnemy(X:Float, Y:Float):Enemy
+	{
+		var e:FollowingEnemy;
+
+		if (rand.bool(90))
+			e = cast enemies.recycle(WalkingEnemy);
+		else
+			e = cast ghosts.recycle(GhostEnemy);
+			
+		e.setPosition(X, Y);
 		e.player = player;
 		e.deathSignal.add(killEnemy);
 		e.attackSignal.add(enemyAttack);
 
-		s.target = e;
+		return e;
 	}
 
 	function killEnemy(enemy:Enemy):Void
@@ -326,8 +347,8 @@ class PlayState extends FlxState
 	{
 		for (i in 0...3)
 		{
-			var p:FlxPoint = new flixel.math.FlxRandom().getObject(enemySpawnPoints);
-			createEnemy(p.x, p.y);
+			var p:FlxPoint = rand.getObject(enemySpawnPoints);
+			spawnEnemy(p.x, p.y);
 		}
 	}
 
@@ -335,6 +356,7 @@ class PlayState extends FlxState
 	{
 		enemySpawnTimer.cancel();
 		enemies.active = false;
+		ghosts.active = false;
 
 		var endText:FlxText = new FlxText(0, 0, 0, "Your survived for:");
 		endText.scrollFactor.set(0, 0);
