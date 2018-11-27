@@ -6,6 +6,7 @@ class Entity extends FlxSprite
 {
     public var pullable:Bool = false;
 	public var pulled:Bool = false;
+	public var shadow:Shadow = null;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{

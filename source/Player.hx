@@ -6,13 +6,13 @@ import flixel.FlxObject;
 import flixel.math.FlxVector;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
+import entities.Entity;
 
-class Player extends FlxSprite
+class Player extends Entity
 {
 	public var deathSignal:FlxSignal;
 	public var launchGrapplingSignal:FlxSignal;
 	public var attackSignal:FlxSignal;
-	public var pulled:Bool = false;
 	public var knocked:Bool = false;
 	public var attackTime:Float = 2/8;
 

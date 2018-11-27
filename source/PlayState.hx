@@ -229,7 +229,9 @@ class PlayState extends FlxState
 
 		if (Std.is(entity, GhostEnemy))
 		{
-			createEnemy(entity.getMidpoint().x, entity.getMidpoint().y);
+			var e = createEnemy(entity.getMidpoint().x, entity.getMidpoint().y);
+			e.shadow = entity.shadow;
+			entity.shadow.target = e;
 		}
 	}
 
@@ -320,6 +322,7 @@ class PlayState extends FlxState
 	function endFallShadow(s:Shadow):Void
 	{
 		s.target = createEnemy(s.x + 4, s.y, 90);
+		s.target.shadow = s;
 	}
 
 	function createEnemy(X:Float, Y:Float, ?normalEnemyChance:Float = 100):Enemy

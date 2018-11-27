@@ -2,10 +2,11 @@ package;
 
 import flixel.FlxSprite;
 import flixel.util.FlxSignal;
+import entities.Entity;
 
 class Shadow extends FlxSprite
 {
-    public var target:FlxSprite;
+    public var target:Entity;
     public var endFallSignal:FlxTypedSignal<Shadow->Void>;
 
 	public function new(?X:Float=0, ?Y:Float=0)
