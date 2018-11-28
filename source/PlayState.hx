@@ -44,6 +44,7 @@ class PlayState extends FlxState
 	public var soundGrapplingHit:FlxSound;
 	public var soundEnemyDrown:FlxSound;
 	public var soundEnemyDisappear:FlxSound;
+	public var soundGhostGrabbed:FlxSound;
 
 	public var timerText:TimerText;
 
@@ -107,6 +108,7 @@ class PlayState extends FlxState
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
 		soundEnemyDisappear = FlxG.sound.load(AssetPaths.enemy_disappear__wav);
+		soundGhostGrabbed = FlxG.sound.load(AssetPaths.ghost_grabbed__wav);
 
 		timerText = new TimerText(0, 0, 0);
 		add(timerText);
@@ -238,6 +240,8 @@ class PlayState extends FlxState
 			{
 				itemFall(e);
 			}
+
+			soundGhostGrabbed.play();
 		}
 	}
 
