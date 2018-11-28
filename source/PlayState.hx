@@ -234,6 +234,12 @@ class PlayState extends FlxState
 			var e = createEnemy(entity.getMidpoint().x, entity.getMidpoint().y);
 			e.shadow = entity.shadow;
 			entity.shadow.target = e;
+			if (!map.hasBackground(Std.int(e.getMidpoint().x / 8), Std.int(e.getMidpoint().y / 8)))
+			{
+				itemFall(e);
+
+				soundEnemyDrown.play();
+			}
 		}
 	}
 
@@ -247,15 +253,21 @@ class PlayState extends FlxState
 
 		if (!map.hasBackground(Std.int(item.getMidpoint().x / 8), Std.int(item.getMidpoint().y / 8)))
 		{
-			item.shadow.kill();
-			item.velocity.set(0, 0);
-			item.shadow = null;
-			FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
-			FlxTween.tween(item, { angle: rand.float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
-			FlxTween.tween(item, { alpha: 0 }, 0.5, { ease: FlxEase.quadOut });
+			itemFall(item);
 
 			soundEnemyDrown.play();
 		}
+	}
+
+	public function itemFall(item:Entity):Void
+	{
+		if (item.shadow != null)
+			item.shadow.kill();
+		item.velocity.set(0, 0);
+		item.shadow = null;
+		FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
+		FlxTween.tween(item, { angle: rand.float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
+		FlxTween.tween(item, { alpha: 0 }, 0.5, { ease: FlxEase.quadOut });
 	}
 
 	public function endItemFall(_:FlxTween, item:Entity):Void
