@@ -237,8 +237,6 @@ class PlayState extends FlxState
 			if (!map.hasBackground(Std.int(e.getMidpoint().x / 8), Std.int(e.getMidpoint().y / 8)))
 			{
 				itemFall(e);
-
-				soundEnemyDrown.play();
 			}
 		}
 	}
@@ -254,8 +252,6 @@ class PlayState extends FlxState
 		if (!map.hasBackground(Std.int(item.getMidpoint().x / 8), Std.int(item.getMidpoint().y / 8)))
 		{
 			itemFall(item);
-
-			soundEnemyDrown.play();
 		}
 	}
 
@@ -268,11 +264,14 @@ class PlayState extends FlxState
 		FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
 		FlxTween.tween(item, { angle: rand.float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
 		FlxTween.tween(item, { alpha: 0 }, 0.5, { ease: FlxEase.quadOut });
+
+		soundEnemyDrown.play();
 	}
 
 	public function endItemFall(_:FlxTween, item:Entity):Void
 	{
 		item.kill();
+		enemyKilledCount += 1;
 		item.setPosition(0, 0);
 	}
 
