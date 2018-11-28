@@ -117,6 +117,8 @@ class MenuState extends FlxState
 		soundGrapplingHit = FlxG.sound.load(AssetPaths.grappling_hit__wav);
 		soundEnemyDrown = FlxG.sound.load(AssetPaths.enemy_drown__wav);
 		soundEnemyDisappear = FlxG.sound.load(AssetPaths.enemy_disappear__wav);
+
+		FlxG.sound.volume = 0.1;
 	}
 
 	override public function update(elapsed:Float):Void
