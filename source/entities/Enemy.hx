@@ -51,6 +51,9 @@ class Enemy extends Entity
 
         velocity.set(0, 0);
         pulled = false;
+        scale.set(1, 1);
+        angle = 0;
+        alpha = 1;
 
         animation.play("run");
     }

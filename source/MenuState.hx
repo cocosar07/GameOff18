@@ -10,6 +10,8 @@ import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import entities.Entity;
 import entities.Enemy;
 import entities.DummyEnemy;
@@ -218,12 +220,23 @@ class MenuState extends FlxState
 
 	public function endPullItem(item:Entity):Void
 	{
-		if (map.collideWithLevel(item, null, FlxObject.updateTouchingFlags))
+		if (!map.hasBackground(Std.int(item.getMidpoint().x / 8), Std.int(item.getMidpoint().y / 8)))
 		{
-			item.kill();
+			item.shadow.kill();
+			item.shadow = null;
+			item.velocity.set(0, 0);
+			FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
+			FlxTween.tween(item, { angle: new flixel.math.FlxRandom().float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
+			FlxTween.tween(item, { alpha: 0 }, 0.5, { ease: FlxEase.quadOut });
+
 			soundEnemyDrown.play();
-            FlxG.switchState(new PlayState());
 		}
+	}
+
+	public function endItemFall(_:FlxTween, item:Entity):Void
+	{
+		item.kill();
+		FlxG.switchState(new PlayState());
 	}
 
 	public function attack():Void
@@ -277,6 +290,7 @@ class MenuState extends FlxState
 		enemy.deathSignal.add(killEnemy);
 
 		s.target = enemy;
+		enemy.shadow = s;
 	}
 
 	function killEnemy(enemy:Enemy):Void

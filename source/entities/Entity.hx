@@ -25,4 +25,9 @@ class Entity extends FlxSprite
 		x -= width/2;
 		y -= height/2;
 	}
+
+	override function revive():Void
+	{
+		super.revive();
+	}
 }

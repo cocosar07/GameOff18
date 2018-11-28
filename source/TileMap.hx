@@ -73,4 +73,15 @@ class TileMap extends TiledMap
 		}
 		return false;
 	}
+
+	public function hasBackground(I:Int, J:Int):Bool
+	{
+		for (layer in collisionLayer)
+		{
+			var l:FlxTilemap = cast layer;
+			return l.getTile(I,J) == 0;
+		}
+
+		return true;
+	}
 }
