@@ -36,6 +36,7 @@ class PlayState extends FlxState
 	public var enemySwords:FlxGroup;
 	public var smoke:FlxGroup;
 	public var shadows:FlxGroup;
+	public var hearts:FlxGroup;
 
 	public var soundPlayerAttack:FlxSound;
 	public var soundEnemyAttack:FlxSound;
@@ -66,6 +67,7 @@ class PlayState extends FlxState
 		enemySwords = new FlxGroup();
 		smoke = new FlxGroup();
 		shadows = new FlxGroup();
+		hearts = new FlxGroup();
 
 		sword = new Sword(AssetPaths.sword__png);
 		sword.kill();
@@ -110,8 +112,18 @@ class PlayState extends FlxState
 		soundEnemyDisappear = FlxG.sound.load(AssetPaths.enemy_disappear__wav);
 		soundGhostGrabbed = FlxG.sound.load(AssetPaths.ghost_grabbed__wav);
 
+		// UI
 		timerText = new TimerText(0, 0, 0);
 		add(timerText);
+
+		for (i in 1...Std.int(player.health)+1)
+		{
+			var h:HeartUI = cast hearts.insert(0, new HeartUI());
+			var side:Int = (i%2) == 0 ? -1 : 1;
+			var p:Int = (i%2) == 0 ? i : i-1;
+			h.setPosition(80 + side * p * 5, 110);
+		}
+		add(hearts);
 
 		enemySpawnTimer = new FlxTimer();
 		enemySpawnTimer.start(5, spawnEnemies, 0);
@@ -323,6 +335,8 @@ class PlayState extends FlxState
 			FlxG.camera.shake(0.03, 0.1);
 			if (player.health <= 0)
 				FlxG.camera.flash(flixel.util.FlxColor.RED, 0.2);
+			
+			hearts.getFirstAlive().kill();
 		}
 
 		soundEnemyAttack.play();
