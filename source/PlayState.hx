@@ -52,6 +52,7 @@ class PlayState extends FlxState
 	public var enemySpawnTimer:FlxTimer;
 	public var enemySpawnPoints:Array<FlxPoint>;
 	public var enemyKilledCount:Int = 0;
+	public var maxEnemies:Int = 15;
 
 	public var rand:FlxRandom;
 
@@ -412,7 +413,7 @@ class PlayState extends FlxState
 
 	function spawnEnemies(_:FlxTimer):Void
 	{
-		for (i in 0...3)
+		for (i in 0...Std.int(Math.min(3, maxEnemies - enemies.countLiving())))
 		{
 			var p:FlxPoint = rand.getObject(enemySpawnPoints);
 			spawnEnemy(p.x, p.y);
