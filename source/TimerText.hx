@@ -17,6 +17,7 @@ class TimerText extends FlxText
 		centerOrigin();
 		scrollFactor.set(0, 0);
 		setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
+		screenCenter(flixel.util.FlxAxes.X);
 
 		timer = new FlxTimer();
 		timer.start(1, onTimerComplete, 0);
