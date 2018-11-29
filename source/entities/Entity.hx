@@ -7,6 +7,7 @@ class Entity extends FlxSprite
     public var pullable:Bool = false;
 	public var pulled:Bool = false;
 	public var shadow:Shadow = null;
+	public var falling:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -29,5 +30,7 @@ class Entity extends FlxSprite
 	override function revive():Void
 	{
 		super.revive();
+		falling = false;
+		pulled = false;
 	}
 }

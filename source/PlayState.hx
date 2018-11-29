@@ -209,7 +209,7 @@ class PlayState extends FlxState
 	{
 		var entity:Entity = cast other;
 
-		if (entity == null || !grappling.launched)
+		if (entity == null || !grappling.launched || entity.falling)
 			return;
 
 		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);	
@@ -265,6 +265,7 @@ class PlayState extends FlxState
 			item.shadow.kill();
 		item.velocity.set(0, 0);
 		item.shadow = null;
+		item.falling = true;
 		FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
 		FlxTween.tween(item, { angle: rand.float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
 		FlxTween.tween(item, { alpha: 0 }, 0.5, { ease: FlxEase.quadOut });

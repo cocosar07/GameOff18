@@ -35,7 +35,7 @@ class FollowingEnemy extends Enemy
 	{
 		super.update(elapsed);
 
-        if (!knocked && !chargingAttack && !attacking)
+        if (!knocked && !chargingAttack && !attacking && !falling)
         {
             if (player != null && !pulled)
             {

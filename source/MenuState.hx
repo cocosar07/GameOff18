@@ -197,7 +197,7 @@ class MenuState extends FlxState
 	{
 		var entity:Entity = cast other;
 
-		if (entity == null || !grappling.launched)
+		if (entity == null || !grappling.launched || entity.falling)
 			return;
 	
 		grappling.setPosition(other.getMidpoint().x, other.getMidpoint().y);	
@@ -224,8 +224,10 @@ class MenuState extends FlxState
 	{
 		if (!map.hasBackground(Std.int(item.getMidpoint().x / 8), Std.int(item.getMidpoint().y / 8)))
 		{
-			item.shadow.kill();
+			if (item.shadow != null)
+				item.shadow.kill();
 			item.shadow = null;
+			item.falling = true;
 			item.velocity.set(0, 0);
 			FlxTween.tween(item.scale, { x: 0, y: 0 }, 0.5, { ease: FlxEase.quadIn });
 			FlxTween.tween(item, { angle: new flixel.math.FlxRandom().float(-90, 90) }, 0.5, { ease: FlxEase.quadOut, onComplete: endItemFall.bind(_, item) });
