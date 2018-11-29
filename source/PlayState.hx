@@ -336,7 +336,15 @@ class PlayState extends FlxState
 			if (player.health <= 0)
 				FlxG.camera.flash(flixel.util.FlxColor.RED, 0.2);
 			
-			hearts.getFirstAlive().kill();
+			for (h in hearts)
+			{
+				var heart:HeartUI = cast h;
+				if (!heart.falling)
+				{
+					heart.startFalling();
+					break;
+				}
+			}
 		}
 
 		soundEnemyAttack.play();
