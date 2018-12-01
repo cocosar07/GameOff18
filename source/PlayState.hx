@@ -446,6 +446,7 @@ class PlayState extends FlxState
 		killsText.scrollFactor.set(0, 0);
 		killsText.scale.set(0.8, 0.8);
 		killsText.screenCenter();
+		killsText.y += 15;
 		killsText.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
 
 		add(killsText);
