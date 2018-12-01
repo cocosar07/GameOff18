@@ -76,7 +76,7 @@ class MenuState extends FlxState
 
 		FlxG.camera.follow(player, LOCKON, 0.3);
 
-		movementText = new FlxText(0, 0, 150, "Arrow/WASD/ZQSD: Move");
+		movementText = new FlxText(0, 0, 150, "Arrows/WASD/ZQSD: Move");
 		movementText.scrollFactor.set(0, 0);
 		movementText.scale.set(0.6, 0.6);
 		movementText.setPosition(0, 0);
