@@ -426,7 +426,7 @@ class PlayState extends FlxState
 		enemies.active = false;
 		ghosts.active = false;
 
-		var endText:FlxText = new FlxText(0, 0, 0, "Your survived for:");
+		var endText:FlxText = new FlxText(0, 0, 0, "You survived for:");
 		endText.scrollFactor.set(0, 0);
 		endText.screenCenter();
 		endText.y -= 40;
@@ -438,7 +438,11 @@ class PlayState extends FlxState
 		timerText.screenCenter();
 		timerText.y -= 20;
 
-		var killsText:FlxText = new FlxText(0, 0, 0, "(" + enemyKilledCount + "  kills)");
+		var text:String = "(" + enemyKilledCount + " kill";
+		if (enemyKilledCount != 1)
+			text += "s";
+		text += ")";
+		var killsText:FlxText = new FlxText(0, 0, 0, text);
 		killsText.scrollFactor.set(0, 0);
 		killsText.scale.set(0.8, 0.8);
 		killsText.screenCenter();
